@@ -1,0 +1,74 @@
+[
+  {
+    "id": "E1",
+    "description": "Search Memegen without generating for an existing template request.",
+    "prompt": "Find me a \"This is Fine\" meme template.",
+    "requiredTools": [
+      "search_memes"
+    ],
+    "forbiddenTools": [
+      "search_giphy",
+      "generate_meme"
+    ]
+  },
+  {
+    "id": "E2",
+    "description": "Use GIPHY for an explicit reaction GIF request.",
+    "prompt": "Find me a crying reaction GIF.",
+    "requiredTools": [
+      "search_giphy"
+    ],
+    "forbiddenTools": [
+      "search_memes",
+      "generate_meme"
+    ]
+  },
+  {
+    "id": "E3",
+    "description": "Generate directly when an exact template ID is provided.",
+    "prompt": "Use template ID \"fine\". Caption it \"THIS IS FINE\" / \"EVERYTHING IS BROKEN\".",
+    "requiredTools": [
+      "generate_meme"
+    ],
+    "forbiddenTools": [
+      "search_memes",
+      "search_giphy"
+    ]
+  },
+  {
+    "id": "E4",
+    "description": "Do not ask for clarification when the user delegates the choice.",
+    "prompt": "My colleague said \"this should be a simple change.\" Make me something funny and sarcastic. You choose what works best.",
+    "requiredTools": [],
+    "forbiddenTools": [
+      "ask_user_question"
+    ]
+  },
+  {
+    "id": "E5",
+    "description": "Clarify an ambiguous visual request in turn 1, then search the selected static meme type in turn 2.",
+    "prompt": "My colleague said \"this should be a simple change.\" I want to reply with something visual.",
+    "requiredTools": [
+      "search_memes"
+    ],
+    "forbiddenTools": [],
+    "forbiddenToolsInTurn": [
+      {
+        "turn": 1,
+        "tools": [
+          "search_memes",
+          "search_giphy",
+          "generate_meme"
+        ]
+      }
+    ],
+    "requiredToolsInTurn": [
+      {
+        "turn": 2,
+        "tools": [
+          "search_memes"
+        ]
+      }
+    ]
+  }
+]
