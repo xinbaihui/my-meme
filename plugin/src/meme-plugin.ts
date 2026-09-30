@@ -175,7 +175,7 @@ export function apply(ctx: Context) {
               `### ${meme.name}`,
               `Template ID: \`${meme.id}\``,
               `![${meme.name}](${meme.imageUrl})`,
-              `Keywords: ${meme.keywords.join(', ') || 'none'}`,
+              `Keywords: ${(meme.keywords ?? []).join(', ') || 'none'}`,
               '',
             ]),
             'Show these candidate image previews to the user and use the selected template ID when calling generate_meme.',
@@ -259,7 +259,7 @@ export function apply(ctx: Context) {
           'Generated meme:',
           '',
           `Template ID: \`${value.templateId}\``,
-          `Caption: ${value.text.join(' / ')}`,
+          `Caption: ${(value.text ?? []).join(' / ')}`,
           '',
           `![Generated meme](${value.imageUrl})`,
           '',
@@ -380,7 +380,26 @@ export function apply(ctx: Context) {
 
       const response = await fetch(url, { headers: { accept: 'application/json' } })
       if (!response.ok) {
-        throw new Error(`GIPHY search request failed with status ${response.status}`)
+        // GIPHY usually returns a small JSON error body (for example, an invalid
+        // API-key message). Include that message without ever exposing the key.
+        const errorBody = await response.text()
+        let detail = errorBody.trim()
+        try {
+          const parsed: unknown = JSON.parse(errorBody)
+          if (typeof parsed === 'object' && parsed !== null) {
+            const meta = (parsed as Record<string, unknown>).meta
+            if (typeof meta === 'object' && meta !== null) {
+              const message = (meta as Record<string, unknown>).msg
+              if (typeof message === 'string' && message.trim()) detail = message.trim()
+            }
+          }
+        } catch {
+          // Keep the plain-text response when the body is not JSON.
+        }
+        const suffix = detail ? `: ${detail.slice(0, 300)}` : ''
+        throw new Error(
+          `GIPHY search request failed with status ${response.status}${suffix}`,
+        )
       }
 
       const payload: unknown = await response.json()

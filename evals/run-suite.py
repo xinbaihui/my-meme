@@ -10,16 +10,18 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import uuid
 from pathlib import Path
 
 
-# run-suite.py 位于 my-meme/evals/，所以 parents[2] 是 deepseek-harness 根目录。
-REPO_ROOT = Path(__file__).resolve().parents[2]
-MY_MEME_ROOT = REPO_ROOT / "my-meme"
-EVALS_DIR = MY_MEME_ROOT / "evals"
+# run-suite.py 位于项目的 evals/ 目录，parents[1] 就是 My Meme 根目录。
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+EVALS_DIR = PROJECT_ROOT / "evals"
 CASES_PATH = EVALS_DIR / "cases.json"
 EVALUATOR_PATH = EVALS_DIR / "behavior-evaluator.mjs"
-KEYS_PATH = REPO_ROOT / ".env" / "keys.json"
+KEYS_PATH = PROJECT_ROOT / ".env" / "keys.json"
+DSH_HOME = Path(os.environ.get("DSH_HOME", PROJECT_ROOT / ".dsh-home")).resolve()
+DSH_PROFILE = os.environ.get("DSH_PROFILE", "my-meme-sdk")
 CONTENT_TOOLS = {"search_memes", "search_giphy", "generate_meme"}
 
 # E5 的首轮 Prompt 故意含糊。Agent 正确提问后，Runner 用固定答案继续同一 Session。
@@ -27,10 +29,9 @@ E5_CLARIFICATION_RESPONSE = (
     "Choose a static meme template. Keep it light and sarcastic; do not generate it yet."
 )
 
-# 直接使用当前仓库中的 Python SDK 源码，不要求提前安装 SDK wheel。
+# 使用当前虚拟环境中正式安装的 deepseek-harness-sdk。
 if sys.version_info < (3, 10):
     raise SystemExit("My Meme Eval Runner requires Python 3.10 or newer.")
-sys.path.insert(0, str(REPO_ROOT / "python" / "sdk" / "src"))
 
 from deepseek_harness import DeepSeekHarness  # noqa: E402
 
@@ -95,7 +96,7 @@ def write_skill_patch(dsh_home: Path) -> Path:
                 {
                     "id": "skill-filesystem",
                     "config": {
-                        "customSkillDirs": [str(REPO_ROOT / ".agents" / "skills")],
+                        "customSkillDirs": [str(PROJECT_ROOT / ".agents" / "skills")],
                         "watch": False,
                     },
                 }
@@ -130,34 +131,20 @@ def run_cases(
     """在隔离 Session 中执行每个 case，并返回 evaluator 的文件参数。"""
     # 临时目录建在项目内，避免受限环境不能写系统临时目录。
     # 名称带随机后缀，因此并发运行时互不影响。
-    run_temp = Path(tempfile.mkdtemp(prefix=".eval-run-", dir=MY_MEME_ROOT))
-    dsh_home = run_temp / "dsh-home"
-    dsh_home.mkdir()
-    runtime_entry = REPO_ROOT / "apps" / "cli" / "src" / "bin.ts"
-    plugin_patch = REPO_ROOT / "my-meme" / "plugins" / "cordis.yml"
-    skill_patch = write_skill_patch(dsh_home)
+    run_temp = Path(tempfile.mkdtemp(prefix=".eval-run-", dir=PROJECT_ROOT))
+    skill_patch = write_skill_patch(run_temp)
     assignments: list[str] = []
 
     try:
         # 一个 Harness runtime 可以复用，但每个 case 使用不同 Session，避免上下文串扰。
         with DeepSeekHarness(
             model=model,
-            cwd=str(REPO_ROOT),
-            runtime_cwd=str(REPO_ROOT),
-            _launch_args=(
-                "node",
-                "--import",
-                "tsx",
-                str(runtime_entry),
-                "--profile",
-                "sdk",
-                "--patch",
-                str(plugin_patch),
-                "--patch",
-                str(skill_patch),
-            ),
+            cwd=str(PROJECT_ROOT),
+            runtime_cwd=str(PROJECT_ROOT),
+            dsh_home=str(DSH_HOME),
+            profile=DSH_PROFILE,
+            patches=(str(skill_patch),),
             env={
-                "DSH_HOME": str(dsh_home),
                 # DSH 子进程产生的其他临时文件也统一放进本次专属目录。
                 "TMPDIR": str(run_temp),
                 "DSH_PERMISSION_MODE": "danger-full-access",
@@ -173,7 +160,12 @@ def run_cases(
                 for run_number in range(1, runs + 1):
                     suffix = "" if runs == 1 else f"-run-{run_number:02d}"
                     output = EVALS_DIR / f"{case_id}{suffix}-session.jsonl"
-                    session_id = f"my-meme-eval-{case_id.lower()}{suffix}"
+                    # Profile 会在 DSH_HOME 中持久保存 Session。加入随机后缀，
+                    # 让重复执行同一个 case 时不会与历史 Session ID 冲突。
+                    session_id = (
+                        f"my-meme-eval-{case_id.lower()}{suffix}-"
+                        f"{uuid.uuid4().hex}"
+                    )
                     session = harness.start_session(session_id)
 
                     run_label = case_id if runs == 1 else f"{case_id} {run_number}/{runs}"
@@ -203,7 +195,7 @@ def run_evaluator(assignments: list[str]) -> int:
     """调用现有 JS evaluator，并原样返回它的 exit code。"""
     completed = subprocess.run(
         ["node", str(EVALUATOR_PATH), *assignments],
-        cwd=REPO_ROOT,
+        cwd=PROJECT_ROOT,
         check=False,
     )
     return completed.returncode

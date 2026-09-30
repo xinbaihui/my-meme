@@ -9,13 +9,17 @@ import os
 import shutil
 import sys
 import tempfile
+import uuid
 from pathlib import Path
 
 
-# __file__ 是当前文件 sdk-smoke.py 的路径。
-# parents[1] 向上两层，得到 deepseek-harness 仓库根目录。
-REPO_ROOT = Path(__file__).resolve().parents[1]
-MY_MEME_ROOT = REPO_ROOT / "my-meme"
+# sdk-smoke.py 位于 My Meme 仓库根目录，因此 parent 就是项目根目录。
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+# Python SDK 会从这个 DSH Home 读取已经安装好 Plugin 的 Profile。
+# 可以通过环境变量覆盖，默认使用项目内被 Git 忽略的 .dsh-home。
+DSH_HOME = Path(os.environ.get("DSH_HOME", PROJECT_ROOT / ".dsh-home")).resolve()
+DSH_PROFILE = os.environ.get("DSH_PROFILE", "my-meme-sdk")
 
 # 本次 smoke test 使用的固定输入，以及期望出现的 Skill 和 Tool。
 PROMPT = "Find me a crying reaction GIF."
@@ -26,10 +30,7 @@ EXPECTED_TOOL = "search_giphy"
 if sys.version_info < (3, 10):
     raise SystemExit("My Meme SDK smoke requires Python 3.10 or newer.")
 
-# 直接使用当前仓库里的 Python SDK 源码，而不是要求先把 SDK 安装到系统中。
-# insert(0, ...) 把这个目录放在 Python 模块搜索路径的最前面。
-sys.path.insert(0, str(REPO_ROOT / "python" / "sdk" / "src"))
-
+# deepseek_harness 来自当前虚拟环境中正式安装的 deepseek-harness-sdk。
 from deepseek_harness import DeepSeekHarness  # noqa: E402
 
 
@@ -58,7 +59,7 @@ def write_skill_patch(dsh_home: Path) -> Path:
                 {
                     "id": "skill-filesystem",
                     "config": {
-                        "customSkillDirs": [str(REPO_ROOT / ".agents" / "skills")],
+                        "customSkillDirs": [str(PROJECT_ROOT / ".agents" / "skills")],
                         "watch": False,
                     },
                 }
@@ -149,38 +150,22 @@ def run_smoke(output: Path, model: str) -> None:
     require_environment()
 
     # 每次运行创建唯一的项目内临时目录，退出时会整体删除。
-    run_temp = Path(tempfile.mkdtemp(prefix=".sdk-smoke-run-", dir=MY_MEME_ROOT))
-    dsh_home = run_temp / "dsh-home"
-    dsh_home.mkdir()
-    runtime_entry = REPO_ROOT / "apps" / "cli" / "src" / "bin.ts"
-
-    # 这个现有配置负责注册 search_memes、generate_meme、search_giphy。
-    plugin_patch = REPO_ROOT / "my-meme" / "plugins" / "cordis.yml"
-    skill_patch = write_skill_patch(dsh_home)
+    run_temp = Path(tempfile.mkdtemp(prefix=".sdk-smoke-run-", dir=PROJECT_ROOT))
+    skill_patch = write_skill_patch(run_temp)
 
     try:
         # with 会创建并启动 Harness；离开代码块时自动关闭它。
         with DeepSeekHarness(
             model=model,
-            cwd=str(REPO_ROOT),
-            runtime_cwd=str(REPO_ROOT),
-            # 用仓库源码启动 DSH SDK profile，同时加载现有 Tools 和 Skill 配置。
-            _launch_args=(
-                "node",
-                "--import",
-                "tsx",
-                str(runtime_entry),
-                "--profile",
-                "sdk",
-                "--patch",
-                str(plugin_patch),
-                "--patch",
-                str(skill_patch),
-            ),
+            cwd=str(PROJECT_ROOT),
+            runtime_cwd=str(PROJECT_ROOT),
+            dsh_home=str(DSH_HOME),
+            profile=DSH_PROFILE,
+            # Profile 提供三个 Tools；这个临时 patch 显式挂载项目 Skill。
+            patches=(str(skill_patch),),
             env={
                 # 这里只补充 DSH 专用环境变量。
                 # DEEPSEEK_API_KEY 和 GIPHY_API_KEY 会从当前 Python 进程继承。
-                "DSH_HOME": str(dsh_home),
                 "TMPDIR": str(run_temp),
                 "DSH_PERMISSION_MODE": "danger-full-access",
                 "DSH_TELEMETRY_DISABLED": "1",
@@ -189,7 +174,10 @@ def run_smoke(output: Path, model: str) -> None:
             shutdown_timeout_seconds=2,
         ) as harness:
             # run() 会发送 Prompt，并等待这一轮 Agent Loop 执行结束。
-            result = harness.run(PROMPT, session_id="my-meme-sdk-smoke")
+            # DSH_HOME 会长期保存 Session；每次 smoke test 使用唯一 ID，避免与
+            # 以前运行留下的同名 Session 冲突。
+            session_id = f"my-meme-sdk-smoke-{uuid.uuid4().hex}"
+            result = harness.run(PROMPT, session_id=session_id)
 
         # result.events 是本次 Session 的完整事件轨迹。
         write_session_jsonl(result.events, output)
@@ -229,7 +217,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=REPO_ROOT / "my-meme" / "evals" / "sdk-smoke-session.jsonl",
+        default=PROJECT_ROOT / "evals" / "sdk-smoke-session.jsonl",
     )
     parser.add_argument(
         "--model",

@@ -2,8 +2,17 @@
 .env.*
 !.env.example
 node_modules/
+plugin/lib/
+plugin/.pack-test/
+.pnpm-store/
 .venv/
+.venv-py39-backup/
+.dsh-home/
+.runtime-tmp/
+.pkg-cache/
 __pycache__/
 .sdk-smoke-tmp/
+.sdk-smoke-run-*/
+.eval-run-*/
 evals/*.jsonl
 .DS_Store
