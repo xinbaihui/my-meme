@@ -8,6 +8,8 @@ plugin/.pack-test/
 .venv/
 .venv-py39-backup/
 .dsh-home/
+.dsh-web*/
+.npm-cache/
 .runtime-tmp/
 .pkg-cache/
 __pycache__/
@@ -16,3 +18,8 @@ __pycache__/
 .eval-run-*/
 evals/*.jsonl
 .DS_Store
+
+# Local migration backups
+/.repo-backups/
+/frontend/.deploy/
+/frontend/.tmp/

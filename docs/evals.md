@@ -72,7 +72,7 @@ E4 intentionally preserves agent autonomy. The evaluator enforces the product re
 `evals/behavior-evaluator.mjs` reads newline-delimited session events and extracts ordered `tool/call` records:
 
 ```text
-[{ name, seq }, ...]
+[{ name, seq, turn }, ...]
 ```
 
 It supports five constraints:
@@ -88,7 +88,7 @@ The evaluator produces a reason for every PASS or FAIL and prints suite totals a
 ### Run automatically
 
 ```bash
-python my-meme/evals/run-suite.py
+backend/.venv/bin/python evals/run-suite.py
 ```
 
 The runner reads `.env/keys.json` when the current process does not already
@@ -100,7 +100,7 @@ writes `E1-session.jsonl` through `E5-session.jsonl`, and invokes the evaluator.
 Run one selected case multiple times in isolated sessions:
 
 ```bash
-python my-meme/evals/run-suite.py --case E5 --runs 5
+backend/.venv/bin/python evals/run-suite.py --case E5 --runs 5
 ```
 
 This writes `E5-run-01-session.jsonl` through
@@ -136,6 +136,57 @@ Exit codes:
 - A subsequent unchanged retry passed 4/5. Across the two post-change samples, E5 passed 9/10 (90%); the remaining failure again searched in turn 1 before clarification.
 
 These are small-sample development results, not a production reliability guarantee.
+
+## Evidence on the portfolio
+
+`frontend/app/evals/page.tsx` reads the checked-in
+`frontend/public/evaluations/snapshot.json`. This is an offline evidence
+snapshot, not a live status dashboard or a model execution endpoint.
+
+To regenerate it from the repository root:
+
+```bash
+cd frontend
+npm run eval:snapshot
+```
+
+`frontend/scripts/export-evaluations.mjs` reads `evals/cases.json` and the five
+local `E*-session.jsonl` records, runs the existing deterministic evaluator,
+and exports each specification, PASS/FAIL verdict, reason, and actual tool
+calls (`name`, `seq`, `turn`). It supports failed case verdicts as well as
+passing ones; unreadable records or evaluator execution errors stop export.
+The exporter does not run new Agent sessions or use model credentials.
+
+The snapshot also contains each record's first event timestamp and SHA-256,
+the export time, and hashes of the evaluator and case specifications. These
+original runs did not record the code version; `runCodeVersion` is null and the
+page displays “Not recorded”. Record time and snapshot export time are distinct
+and are displayed in UTC+8. Neither should be presented as a new live eval run.
+
+Raw logs are Git-ignored and remain local. The public snapshot excludes raw
+messages, tool arguments and tool results. Its included prompts are the test
+specifications from `cases.json`. The committed snapshot lets the portfolio
+build and display results even when raw records are absent. Regeneration and
+the source-comparison test require those local records.
+
+The current snapshot rechecks the saved suite at 5/5. E5's 4/5 baseline and
+9/10 post-change repeat-run totals are separate documented experiments; their
+individual records are not included or recomputed by this snapshot. The page
+labels this distinction and does not invent historical event sequences.
+In the saved E5 record, template searches occur in turn 2; these checks alone
+do not require an `ask_user_question` tool call in turn 1 or prove question quality.
+
+To verify the portfolio and exported evidence:
+
+```bash
+cd frontend
+npm test
+```
+
+The existing tests build and render both pages without the Python API, check
+sample/metadata labeling, and compare exported calls with local source records.
+DSH Trajectory provides live execution inspection; the public evaluation page
+provides a fixed, independently inspectable behavior sample.
 
 ## SDK smoke test
 

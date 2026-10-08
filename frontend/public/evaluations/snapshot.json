@@ -1,0 +1,183 @@
+{
+  "exportedAt": "2026-10-08T03:39:06.665Z",
+  "runCodeVersion": null,
+  "evaluatorSha256": "e0e0f59becb231ee835c7c36f4610c88eb194984868f4103d1fb4faf5f44a900",
+  "specificationsSha256": "ff1d8e7e282819f45ecb0c0471dcce6a25eb6da5d2fa0784377072e17a0984ef",
+  "scope": "Tool presence, absence and turn ordering. No semantic or visual quality scoring.",
+  "passed": 5,
+  "total": 5,
+  "cases": [
+    {
+      "id": "E1",
+      "description": "Search Memegen without generating for an existing template request.",
+      "prompt": "Find me a \"This is Fine\" meme template.",
+      "requiredTools": [
+        "search_memes"
+      ],
+      "forbiddenTools": [
+        "search_giphy",
+        "generate_meme"
+      ],
+      "source": "evals/E1-session.jsonl",
+      "sourceSha256": "9c8fab31f24e5905b721e9bc19004e46488c4578d32c58a98865c6e1181dfc63",
+      "recordedAt": "2026-09-30T09:46:59.084Z",
+      "result": "PASS",
+      "reason": "required tools present: search_memes; forbidden tools absent: search_giphy, generate_meme",
+      "calls": [
+        {
+          "name": "skill",
+          "seq": 15,
+          "turn": 1
+        },
+        {
+          "name": "search_memes",
+          "seq": 20,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "id": "E2",
+      "description": "Use GIPHY for an explicit reaction GIF request.",
+      "prompt": "Find me a crying reaction GIF.",
+      "requiredTools": [
+        "search_giphy"
+      ],
+      "forbiddenTools": [
+        "search_memes",
+        "generate_meme"
+      ],
+      "source": "evals/E2-session.jsonl",
+      "sourceSha256": "f0915de05b8ac4e66c1de4f8ed9edbb449ad8106f4400f0d4a39e4ff2f458058",
+      "recordedAt": "2026-09-30T09:47:03.441Z",
+      "result": "PASS",
+      "reason": "required tools present: search_giphy; forbidden tools absent: search_memes, generate_meme",
+      "calls": [
+        {
+          "name": "skill",
+          "seq": 15,
+          "turn": 1
+        },
+        {
+          "name": "search_giphy",
+          "seq": 20,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "id": "E3",
+      "description": "Generate directly when an exact template ID is provided.",
+      "prompt": "Use template ID \"fine\". Caption it \"THIS IS FINE\" / \"EVERYTHING IS BROKEN\".",
+      "requiredTools": [
+        "generate_meme"
+      ],
+      "forbiddenTools": [
+        "search_memes",
+        "search_giphy"
+      ],
+      "source": "evals/E3-session.jsonl",
+      "sourceSha256": "fca2f58958e12d1aa6bb40c23b29c453b30ddca824aee1c4b81127b5b37c9909",
+      "recordedAt": "2026-09-30T09:47:08.556Z",
+      "result": "PASS",
+      "reason": "required tools present: generate_meme; forbidden tools absent: search_memes, search_giphy",
+      "calls": [
+        {
+          "name": "skill",
+          "seq": 15,
+          "turn": 1
+        },
+        {
+          "name": "generate_meme",
+          "seq": 20,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "id": "E4",
+      "description": "Do not ask for clarification when the user delegates the choice.",
+      "prompt": "My colleague said \"this should be a simple change.\" Make me something funny and sarcastic. You choose what works best.",
+      "requiredTools": [],
+      "forbiddenTools": [
+        "ask_user_question"
+      ],
+      "source": "evals/E4-session.jsonl",
+      "sourceSha256": "4fa94fbc6ba4a58424a3b2247ccb9ca9f4c144c04cc7f04af74a5cd562c44c46",
+      "recordedAt": "2026-09-30T09:47:13.357Z",
+      "result": "PASS",
+      "reason": "required tools present: ; forbidden tools absent: ask_user_question",
+      "calls": [
+        {
+          "name": "skill",
+          "seq": 15,
+          "turn": 1
+        },
+        {
+          "name": "search_memes",
+          "seq": 20,
+          "turn": 1
+        },
+        {
+          "name": "generate_meme",
+          "seq": 25,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "description": "Clarify an ambiguous visual request in turn 1, then search the selected static meme type in turn 2.",
+      "prompt": "My colleague said \"this should be a simple change.\" I want to reply with something visual.",
+      "requiredTools": [
+        "search_memes"
+      ],
+      "forbiddenTools": [],
+      "forbiddenToolsInTurn": [
+        {
+          "turn": 1,
+          "tools": [
+            "search_memes",
+            "search_giphy",
+            "generate_meme"
+          ]
+        }
+      ],
+      "requiredToolsInTurn": [
+        {
+          "turn": 2,
+          "tools": [
+            "search_memes"
+          ]
+        }
+      ],
+      "source": "evals/E5-session.jsonl",
+      "sourceSha256": "34e5c07a99bdde4431da9ed044273b8c0ad14472ca3aca5b9ce9cfe22abd9345",
+      "recordedAt": "2026-09-30T09:47:19.617Z",
+      "result": "PASS",
+      "reason": "required tools present: search_memes; required per-turn tools present; forbidden per-turn tools absent",
+      "calls": [
+        {
+          "name": "skill",
+          "seq": 15,
+          "turn": 1
+        },
+        {
+          "name": "search_memes",
+          "seq": 28,
+          "turn": 2
+        },
+        {
+          "name": "search_memes",
+          "seq": 30,
+          "turn": 2
+        },
+        {
+          "name": "search_memes",
+          "seq": 32,
+          "turn": 2
+        }
+      ]
+    }
+  ]
+}

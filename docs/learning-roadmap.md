@@ -22,6 +22,10 @@ Use My Meme to learn agent application engineering through small, observable exp
 | Eval Suite | Completed | E1–E5 run through one evaluator and produce a suite summary. |
 | Automated Eval Runner | Completed | `run-suite.py` executes cases through isolated SDK sessions, saves JSONL, and invokes the existing evaluator. |
 | Repeated-run Reliability | Completed at development-sample level | E5 scored 4/5 before the gate change and 9/10 across two post-change samples; Skill guidance improved but did not guarantee compliance. |
+| Monorepo | Completed | One repository contains frontend, backend, and plugin; dependencies are independently installed without Nx or workspace hoisting. |
+| Interview presentation | Implemented locally | Compact Overview and recorded Evaluations pages; native DSH Web selected for live Chat. |
+| Public evidence snapshot | Completed | Existing evaluator rechecks saved E1–E5 records; exported verdicts, sequences, timestamps and hashes are displayed without raw tool payloads. |
+| Public demo deployment | Pending | Configure a hosted DSH Web destination and verify interviewer access before enabling the live-demo link. |
 | Tool Result Validity | **Current next step** | Tool calls are checked, but successful and structurally valid Tool results are not yet evaluated. |
 
 ## Current next step
@@ -47,6 +51,19 @@ clear that preparatory candidate search is also forbidden. Two post-change
 five-run samples passed 5/5 and 4/5, for 9/10 (90%) combined. The repeated
 failure mode shows that a Skill instruction guides Model behavior but is not a
 deterministic enforcement boundary.
+
+## Interview delivery
+
+The selected delivery plan is an independent portfolio plus the unmodified
+DSH Web interface for live use. The Overview stays brief; detailed evaluation
+evidence belongs on `/evals`. This avoids maintaining another Chat interaction
+state machine. A customized DSH client remains an option, not the current plan.
+
+The portfolio is implemented and has passed build and rendered-page/evidence
+tests. Public DSH deployment and access verification are still pending. Set
+`NEXT_PUBLIC_DSH_WEB_URL` after a public base address is available, then rebuild
+the portfolio. No launch credential belongs in the frontend configuration.
+The Python API is retained but is optional for this presentation.
 
 ## Learning principles
 

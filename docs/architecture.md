@@ -4,7 +4,48 @@
 
 My Meme is a DeepSeek Harness agent that returns either an existing reaction GIF, an existing meme template, or a newly captioned meme. The design keeps content selection in a Skill and external actions in Tools.
 
-## Current architecture
+## Presentation and runtime boundaries
+
+The interview presentation uses a lightweight portfolio and the native DSH Web
+interface as separate browser destinations:
+
+```mermaid
+flowchart LR
+    V["Visitor"] --> P["Portfolio: Overview"]
+    P --> E["Evaluations: saved evidence"]
+    P -->|"Configured external link"| W["Native DSH Web: Chat + Trajectory"]
+    W --> H["DSH Agent + meme-selection Skill"]
+    H --> B["plugin/: Memegen and GIPHY tools"]
+    R["evals/: recorded SDK sessions"] --> X["Deterministic evaluator + snapshot exporter"]
+    X --> E
+```
+
+The portfolio is implemented in `frontend/`. It presents a short description,
+a live-demo entry, and three contribution summaries. Detailed metrics and
+recorded evidence live on `/evals`, reached through the header navigation.
+There is no embedded Chat or iframe, and no text-to-option parsing in the current
+frontend. DSH owns message input, questions, answers, tool interaction, session
+state, and Trajectory display.
+
+`NEXT_PUBLIC_DSH_WEB_URL` selects the external demo destination. It is a public
+build-time frontend setting, not an authentication mechanism. Without a valid
+HTTP(S) address, the Overview shows “Live demo coming soon”. The public DSH
+service has not been deployed; browser access must be configured separately.
+
+The Python API in `backend/` remains available for earlier SDK/custom-Chat
+integrations. The portfolio does not use it, and its SDK sessions are not
+implicitly linked to DSH Web sessions.
+
+## Repository and dependencies
+
+`frontend/`, `backend/`, and `plugin/` belong to one Git repository. The frontend
+is no longer a nested repository; its old Git metadata is backed up locally in
+`.repo-backups/frontend.git/`. No Nx or npm/pnpm workspace is used. Each module
+owns its dependency manifest and installation: npm in `frontend/`, Python
+requirements and an optional local virtual environment in `backend/`, pnpm in
+`plugin/`. The Makefile only delegates commands.
+
+## Agent architecture
 
 ```mermaid
 flowchart TD
@@ -108,7 +149,9 @@ It should not ask when the request is sufficiently specific or the user explicit
 - No explicit task-state model or persistent memory.
 - No semantic or visual-quality evaluator.
 - No RAG, MCP integration, or multi-agent architecture.
-- The current Cordis plugin configuration includes a local absolute plugin path and is not yet portable across machines.
+- Local DSH profile installation is machine-specific; deploying the demo requires installing `plugin/` and making the repository Skill available on the host.
+- The public demo and multi-user isolation have not been verified.
+- Public evaluation evidence is an offline snapshot; it does not update from live DSH Chat sessions.
 
 ## Next step
 
