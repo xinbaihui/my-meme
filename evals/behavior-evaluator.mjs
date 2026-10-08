@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { readFile } from 'node:fs/promises'
+import { evaluateToolResults } from './tool-result-evaluator.mjs'
 
 const CASES_URL = new URL('./cases.json', import.meta.url)
 
@@ -199,6 +200,8 @@ async function main() {
   const assignments = parseAssignments(process.argv.slice(2))
   let failed = false
   let passedCount = 0
+  let resultPassedCount = 0
+  let resultApplicableCount = 0
 
   for (const assignment of assignments) {
     const evalCase = casesById.get(assignment.caseId)
@@ -213,7 +216,14 @@ async function main() {
 
     console.log(`${evalCase.id} ${status} — ${result.reason}`)
     if (result.passed) passedCount += 1
-    failed ||= !result.passed
+    const events = jsonl.split(/\r?\n/).filter(line => line.trim()).map(line => JSON.parse(line))
+    const outputs = evaluateToolResults(events, evalCase)
+    console.log(`${evalCase.id} RESULTS ${!outputs.applicable ? 'N/A' : outputs.passed ? 'PASS' : 'FAIL'} — ${outputs.reason}`)
+    if (outputs.applicable) {
+      resultApplicableCount += 1
+      if (outputs.passed) resultPassedCount += 1
+    }
+    failed ||= !result.passed || !outputs.passed
   }
 
   const total = assignments.length
@@ -226,6 +236,7 @@ async function main() {
   console.log(`Failed: ${failedCount}`)
   console.log(`Pass rate: ${passRate}%`)
 
+  console.log(`Tool results: ${resultPassedCount}/${resultApplicableCount} applicable cases passed`)
   process.exitCode = failed ? 1 : 0
 }
 

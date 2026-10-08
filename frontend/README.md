@@ -31,15 +31,25 @@ the existing pnpm lockfile is retained.
 
 ## Live demo link
 
-Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_DSH_WEB_URL` to the
-public DSH Web base address. The “Try My Meme” link opens in a new tab. Restart development or rebuild the production
-site after changing it. Without an address, the overview shows “Live demo
-coming soon” and does not link to a broken demo.
+Copy `.env.example` to `.env.local`. For local interviews, keep
+`NEXT_PUBLIC_DSH_WEB_URL=http://127.0.0.1:3081/` and start DSH from the repository root:
 
-This is a public frontend variable. Do not put a launch token or API key in it.
-DSH browser access must be arranged separately; the link does not bypass DSH
-authentication. This site does not deploy DSH or connect its sessions to the
-legacy Python API.
+```bash
+node scripts/start-dsh.mjs
+```
+
+The helper launches native DSH on port 3080 and captures its current tokenized
+startup URL. The fixed entry on port 3081 redirects to that URL. Each helper
+restart picks up the new token automatically; it is held only in memory and
+redirect responses are not cached. Stop an existing DSH process before using
+the helper. Keep the helper running while using “Try My Meme”.
+
+The link opens in a new tab. Restart frontend development or rebuild after
+changing the environment setting. Without an address, the Overview shows
+“Live demo coming soon”. This public setting must never contain a token or API
+key. For public hosting, replace it with a deployed DSH base address and arrange
+visitor authentication separately. The local helper binds only to loopback and
+is for demonstrations on this computer. Neither page requires the Python API.
 
 ## Recorded evaluation evidence
 
@@ -54,8 +64,8 @@ writes `public/evaluations/snapshot.json`. It does not call a model or run new
 Agent sessions. Source logs must be present locally to regenerate the snapshot.
 The checked-in snapshot lets the public pages run without those private logs.
 
-Only case specifications, verdicts, tool names/sequence/turn, source timestamps
-and hashes are exported. Tool arguments, results and raw messages are omitted.
+Case specifications, behavior verdicts, tool names/sequence/turn, sanitized
+per-call result status/count/reason, source timestamps and hashes are exported. Tool arguments, results and raw messages are omitted.
 The original Agent run code version was not captured, so the page states
 “Not recorded”; source hashes identify the input records and evaluator instead.
 Repeated E5 run totals are separately labeled as documented experiments, not
@@ -63,4 +73,6 @@ recomputed snapshot results.
 
 The rendered-page tests require the local source trajectories and run against the build and check that the portfolio
 works without the Python backend, that evaluation evidence is presented as a
-sample, and that exported calls match local source records.
+sample, and that exported calls match local source records. Output checks use
+the plugin-rendered text stored in those records; they do not fetch image URLs
+or prove final-message delivery. Behavior and result-check totals are separate.

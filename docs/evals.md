@@ -2,7 +2,7 @@
 
 ## Purpose
 
-My Meme evaluations test agent behavior, not only the final answer. The current suite verifies tool selection, prohibited actions, and clarification order from DeepSeek Harness session trajectories.
+My Meme evaluations test agent behavior, not only the final answer. The current suite verifies tool behavior and the structure of recorded business-tool results from DeepSeek Harness session trajectories.
 
 ## Current evaluation pipeline
 
@@ -12,7 +12,7 @@ cases.json prompt
   -> agent produces a trajectory
   -> runner persists session JSONL
   -> behavior-evaluator.mjs reads tool/call events
-  -> case result and suite summary
+  -> separate behavior and tool-result verdicts and suite summaries
 ```
 
 ## Component responsibilities
@@ -122,7 +122,7 @@ node evals/behavior-evaluator.mjs \
 Exit codes:
 
 - `0`: all assigned cases pass.
-- `1`: at least one behavior case fails.
+- `1`: at least one behavior or tool-result check fails.
 - `2`: invalid input or evaluator execution error.
 
 ## Verified results
@@ -136,6 +136,55 @@ Exit codes:
 - A subsequent unchanged retry passed 4/5. Across the two post-change samples, E5 passed 9/10 (90%); the remaining failure again searched in turn 1 before clarification.
 
 These are small-sample development results, not a production reliability guarantee.
+
+## Tool result validity
+
+`evals/tool-result-evaluator.mjs` validates every recorded call to
+`search_memes`, `search_giphy`, and `generate_meme`. The behavior cases and their
+constraints are unchanged. The existing CLI now prints both verdicts, reports
+separate totals, and returns exit code 1 if either dimension fails.
+
+Calls and results are paired by `callId`; the result envelope's `toolCallId`
+must agree, the result must follow the call, and the turn must match. Missing
+or duplicate results, ambiguous call IDs, and unsupported envelopes fail.
+The successful envelope must explicitly have `isError: false`; tool errors
+are reported without exporting their raw text.
+
+The source trajectories store rendered text, not the tools' original return
+JSON. The validator therefore follows the plugin's current rendered-output
+contract and does not claim to validate a raw JSON schema:
+
+| Tool | Recorded fields checked |
+|---|---|
+| `search_memes` | Every candidate's nonempty title, template ID, HTTP(S) image URL, and keywords field. |
+| `search_giphy` | Every candidate's nonempty title, ID, HTTP(S) preview URL and GIF URL. |
+| `generate_meme` | Nonempty template ID and caption; matching HTTP(S) preview and image URL. |
+
+Per-call statuses are `VALID`, `EMPTY`, `ERROR`, `INVALID`, or `MISSING`.
+An explicit no-results response is `EMPTY`: a successful search with zero
+artifacts, not an execution error. Each required business-tool route must
+produce at least one `VALID` output, including required turn constraints.
+Thus an empty required search alone fails the case, while an empty search
+followed by valid results can pass. Every called business tool is checked;
+an execution error remains a result-check failure even after recovery.
+Cases with neither business calls nor required business output are `N/A` and
+are excluded from the applicable-result denominator.
+
+Image URLs are checked syntactically, without HTTP requests. Artifact counts
+count returned candidates, not unique images or delivered final answers.
+Results do not prove link availability, caption fidelity to the original
+request, semantic relevance, visual quality, or final-response delivery.
+Changing the plugin's rendered format requires updating this validator.
+
+Run the offline result-validator regression tests (local E1–E5 logs required):
+
+```bash
+node --test evals/tests/tool-results.test.mjs
+```
+
+The tests cover real records and mutations for mismatched/missing/duplicate
+results, explicit errors, malformed candidates, invalid URLs, generated-image
+consistency, empty-search recovery, and not-applicable cases.
 
 ## Evidence on the portfolio
 
@@ -152,8 +201,8 @@ npm run eval:snapshot
 
 `frontend/scripts/export-evaluations.mjs` reads `evals/cases.json` and the five
 local `E*-session.jsonl` records, runs the existing deterministic evaluator,
-and exports each specification, PASS/FAIL verdict, reason, and actual tool
-calls (`name`, `seq`, `turn`). It supports failed case verdicts as well as
+and exports each specification, behavior verdict, actual tool calls
+(`name`, `seq`, `turn`), and separate sanitized tool-result checks. It supports failed case verdicts as well as
 passing ones; unreadable records or evaluator execution errors stop export.
 The exporter does not run new Agent sessions or use model credentials.
 
@@ -169,7 +218,7 @@ specifications from `cases.json`. The committed snapshot lets the portfolio
 build and display results even when raw records are absent. Regeneration and
 the source-comparison test require those local records.
 
-The current snapshot rechecks the saved suite at 5/5. E5's 4/5 baseline and
+The current snapshot rechecks the saved suite at 5/5 behavior and 5/5 applicable tool-result cases. E5's 4/5 baseline and
 9/10 post-change repeat-run totals are separate documented experiments; their
 individual records are not included or recomputed by this snapshot. The page
 labels this distinction and does not invent historical event sequences.
@@ -196,7 +245,7 @@ This smoke test is not the Automated Eval Runner. It verifies configuration avai
 
 ## Current limitations
 
-- Required tool presence does not prove tool success or a valid final artifact.
+- Required tool presence alone does not prove success. Result checks now validate recorded success and structure, but not a valid delivered final artifact.
 - The suite does not score relevance, humor, tone, image quality, latency, cost, or repeated-run reliability automatically.
 - E5 deterministically checks the two-turn tool behavior, but does not judge whether the first assistant text is a high-quality clarification question.
 - Five distinct passing cases produce a suite pass rate; repeated executions of one case produce a reliability rate. These metrics must not be conflated.

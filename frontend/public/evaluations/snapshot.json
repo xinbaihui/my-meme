@@ -1,9 +1,12 @@
 {
-  "exportedAt": "2026-10-08T03:39:06.665Z",
+  "exportedAt": "2026-10-08T04:09:20.063Z",
   "runCodeVersion": null,
-  "evaluatorSha256": "e0e0f59becb231ee835c7c36f4610c88eb194984868f4103d1fb4faf5f44a900",
+  "evaluatorSha256": "0b116358863e37e34ae54d3c0f4a5efd4fce111cdc0bdee61f7bf08107626de2",
   "specificationsSha256": "ff1d8e7e282819f45ecb0c0471dcce6a25eb6da5d2fa0784377072e17a0984ef",
-  "scope": "Tool presence, absence and turn ordering. No semantic or visual quality scoring.",
+  "resultEvaluatorSha256": "5f1e3b388749f62d8dbc7094e59bebdafd5a5449000e02c346af78c18a6182f6",
+  "scope": "Tool behavior and recorded rendered-result structure. No URL fetching, final-message delivery, semantic or visual quality scoring.",
+  "resultsPassed": 5,
+  "resultsApplicable": 5,
   "passed": 5,
   "total": 5,
   "cases": [
@@ -23,6 +26,23 @@
       "recordedAt": "2026-09-30T09:46:59.084Z",
       "result": "PASS",
       "reason": "required tools present: search_memes; forbidden tools absent: search_giphy, generate_meme",
+      "toolResults": {
+        "applicable": true,
+        "passed": true,
+        "artifactCount": 5,
+        "checks": [
+          {
+            "tool": "search_memes",
+            "callSeq": 20,
+            "turn": 1,
+            "resultSeq": 21,
+            "artifactCount": 5,
+            "status": "VALID",
+            "reason": "All 5 candidates contain the required ID, title and HTTP(S) image fields."
+          }
+        ],
+        "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
+      },
       "calls": [
         {
           "name": "skill",
@@ -52,6 +72,23 @@
       "recordedAt": "2026-09-30T09:47:03.441Z",
       "result": "PASS",
       "reason": "required tools present: search_giphy; forbidden tools absent: search_memes, generate_meme",
+      "toolResults": {
+        "applicable": true,
+        "passed": true,
+        "artifactCount": 5,
+        "checks": [
+          {
+            "tool": "search_giphy",
+            "callSeq": 20,
+            "turn": 1,
+            "resultSeq": 21,
+            "artifactCount": 5,
+            "status": "VALID",
+            "reason": "All 5 candidates contain the required ID, title and HTTP(S) image fields."
+          }
+        ],
+        "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
+      },
       "calls": [
         {
           "name": "skill",
@@ -81,6 +118,23 @@
       "recordedAt": "2026-09-30T09:47:08.556Z",
       "result": "PASS",
       "reason": "required tools present: generate_meme; forbidden tools absent: search_memes, search_giphy",
+      "toolResults": {
+        "applicable": true,
+        "passed": true,
+        "artifactCount": 1,
+        "checks": [
+          {
+            "tool": "generate_meme",
+            "callSeq": 20,
+            "turn": 1,
+            "resultSeq": 21,
+            "artifactCount": 1,
+            "status": "VALID",
+            "reason": "Template ID, caption and matching HTTP(S) image links present."
+          }
+        ],
+        "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
+      },
       "calls": [
         {
           "name": "skill",
@@ -107,6 +161,32 @@
       "recordedAt": "2026-09-30T09:47:13.357Z",
       "result": "PASS",
       "reason": "required tools present: ; forbidden tools absent: ask_user_question",
+      "toolResults": {
+        "applicable": true,
+        "passed": true,
+        "artifactCount": 9,
+        "checks": [
+          {
+            "tool": "search_memes",
+            "callSeq": 20,
+            "turn": 1,
+            "resultSeq": 21,
+            "artifactCount": 8,
+            "status": "VALID",
+            "reason": "All 8 candidates contain the required ID, title and HTTP(S) image fields."
+          },
+          {
+            "tool": "generate_meme",
+            "callSeq": 25,
+            "turn": 1,
+            "resultSeq": 26,
+            "artifactCount": 1,
+            "status": "VALID",
+            "reason": "Template ID, caption and matching HTTP(S) image links present."
+          }
+        ],
+        "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
+      },
       "calls": [
         {
           "name": "skill",
@@ -156,6 +236,41 @@
       "recordedAt": "2026-09-30T09:47:19.617Z",
       "result": "PASS",
       "reason": "required tools present: search_memes; required per-turn tools present; forbidden per-turn tools absent",
+      "toolResults": {
+        "applicable": true,
+        "passed": true,
+        "artifactCount": 26,
+        "checks": [
+          {
+            "tool": "search_memes",
+            "callSeq": 28,
+            "turn": 2,
+            "resultSeq": 29,
+            "artifactCount": 10,
+            "status": "VALID",
+            "reason": "All 10 candidates contain the required ID, title and HTTP(S) image fields."
+          },
+          {
+            "tool": "search_memes",
+            "callSeq": 30,
+            "turn": 2,
+            "resultSeq": 31,
+            "artifactCount": 6,
+            "status": "VALID",
+            "reason": "All 6 candidates contain the required ID, title and HTTP(S) image fields."
+          },
+          {
+            "tool": "search_memes",
+            "callSeq": 32,
+            "turn": 2,
+            "resultSeq": 33,
+            "artifactCount": 10,
+            "status": "VALID",
+            "reason": "All 10 candidates contain the required ID, title and HTTP(S) image fields."
+          }
+        ],
+        "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
+      },
       "calls": [
         {
           "name": "skill",

@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { evaluateToolResults } from '../../evals/tool-result-evaluator.mjs';
 
 const root = new URL('../../', import.meta.url);
 const cases = JSON.parse(await readFile(new URL('evals/cases.json', root), 'utf8'));
@@ -18,15 +19,18 @@ for (const specification of cases) {
   if (!match) throw new Error(`Missing evaluator result: ${specification.id}`);
   const dates = events.map(event => event.time ?? event.timestamp).filter(value => (typeof value === 'number' || typeof value === 'string') && !Number.isNaN(new Date(value).getTime())).map(value => new Date(value).toISOString());
   records.push({ ...specification, source, sourceSha256: hash(raw), recordedAt: dates[0] ?? null,
-    result: match[1], reason: match[2],
+    result: match[1], reason: match[2], toolResults: evaluateToolResults(events, specification),
     calls: events.filter(event => event.type === 'tool/call').map(event => ({ name: event.data.name, seq: event.seq, turn: event.data.turn })).sort((a,b) => a.seq-b.seq) });
 }
 const report = { exportedAt: new Date().toISOString(), runCodeVersion: null,
   evaluatorSha256: hash(await readFile(new URL('evals/behavior-evaluator.mjs', root), 'utf8')),
   specificationsSha256: hash(await readFile(new URL('evals/cases.json', root), 'utf8')),
-  scope: 'Tool presence, absence and turn ordering. No semantic or visual quality scoring.',
+  resultEvaluatorSha256: hash(await readFile(new URL('evals/tool-result-evaluator.mjs', root), 'utf8')),
+  scope: 'Tool behavior and recorded rendered-result structure. No URL fetching, final-message delivery, semantic or visual quality scoring.',
+  resultsPassed: records.filter(record => record.toolResults.applicable && record.toolResults.passed).length,
+  resultsApplicable: records.filter(record => record.toolResults.applicable).length,
   passed: records.filter(record => record.result === 'PASS').length, total: records.length, cases: records };
 const destination = new URL('../public/evaluations/snapshot.json', import.meta.url);
 await mkdir(new URL('.', destination), { recursive: true });
 await writeFile(destination, JSON.stringify(report, null, 2) + '\n');
-console.log(`Exported ${report.passed}/${report.total} recorded cases. Raw logs, tool arguments and results are excluded.`);
+console.log(`Exported ${report.passed}/${report.total} recorded cases. Raw logs, tool arguments and result payloads are excluded.`);

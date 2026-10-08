@@ -4,7 +4,8 @@ export function demoUrl(): string | undefined {
   if (!configuredUrl) return undefined;
   try {
     const url = new URL(configuredUrl);
-    return ['https:', 'http:'].includes(url.protocol) ? url.href : undefined;
+    if (!['https:', 'http:'].includes(url.protocol) || url.searchParams.has('token') || url.username || url.password) return undefined;
+    return url.href;
   } catch {
     return undefined;
   }

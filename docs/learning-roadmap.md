@@ -26,23 +26,22 @@ Use My Meme to learn agent application engineering through small, observable exp
 | Interview presentation | Implemented locally | Compact Overview and recorded Evaluations pages; native DSH Web selected for live Chat. |
 | Public evidence snapshot | Completed | Existing evaluator rechecks saved E1–E5 records; exported verdicts, sequences, timestamps and hashes are displayed without raw tool payloads. |
 | Public demo deployment | Pending | Configure a hosted DSH Web destination and verify interviewer access before enabling the live-demo link. |
-| Tool Result Validity | **Current next step** | Tool calls are checked, but successful and structurally valid Tool results are not yet evaluated. |
+| Tool Result Validity | Completed for recorded structure | Calls correlate to explicit success/error envelopes; rendered artifact fields, empty results and required-route outputs are checked with regression tests. |
+| Final Artifact Delivery | **Current next step** | Tool-result validity does not prove that the final answer delivers the intended artifact or preserves the requested caption. |
 
 ## Current next step
 
-Evaluate Tool results and final artifact validity:
+Evaluate final artifact delivery and caption fidelity:
 
 ```text
-tool call -> tool result -> deterministic artifact checks -> report
+tool call -> validated tool result -> final response -> delivery checks
 ```
 
-Success criteria:
-
-- correlate each required Tool call with its recorded Tool result;
-- distinguish a successful result from a Tool error;
-- validate the minimum normalized fields required by each My Meme Tool;
-- keep semantic relevance and visual quality out of deterministic checks;
-- report behavior and result-validity failures separately when useful.
+Result validity is implemented for the saved rendered-output contract and
+passes 5/5 applicable cases. The separate behavior suite still passes 5/5.
+Next checks should correlate usable result artifacts with the final answer and
+compare generated captions with the explicit requested text. URL availability
+and semantic/visual quality are separate questions; none is currently measured.
 
 Reliability experiment: E5 initially passed 4/5 isolated runs. The failed run
 loaded the Skill but called `search_memes` in turn 1 before clarification. A

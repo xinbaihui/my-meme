@@ -3,10 +3,10 @@ PYTHON ?= python3
 BACKEND_PYTHON ?= backend/.venv/bin/python
 PLUGIN_DIR := plugin
 .DEFAULT_GOAL := help
-.PHONY: help install install-frontend install-backend install-plugin dev-frontend dev-backend build build-frontend build-plugin test-frontend lint-frontend eval smoke
+.PHONY: help dev-dsh install install-frontend install-backend install-plugin dev-frontend dev-backend build build-frontend build-plugin test-frontend lint-frontend eval smoke
 help:
 	@echo "Install: make install (or install-frontend / install-backend / install-plugin)"
-	@echo "Run: make dev-frontend and make dev-backend in separate terminals"
+	@echo "Demo: make dev-frontend and make dev-dsh in separate terminals; legacy API: make dev-backend"
 	@echo "Check: make build / test-frontend / lint-frontend / eval / smoke"
 install: install-frontend install-backend install-plugin
 install-frontend:
@@ -34,3 +34,6 @@ eval:
 	$(BACKEND_PYTHON) evals/run-suite.py
 smoke:
 	$(BACKEND_PYTHON) sdk-smoke.py
+
+dev-dsh:
+	node scripts/start-dsh.mjs

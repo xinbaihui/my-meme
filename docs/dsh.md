@@ -13,8 +13,10 @@ custom Chat component.
 From the My Meme repository root:
 
 ```bash
-npm_config_cache="$PWD/.npm-cache" npx --yes @deepseek-ai/dsh web --no-open
+node scripts/start-dsh.mjs
 ```
+
+The helper runs `npm_config_cache="$PWD/.npm-cache" npx --yes @deepseek-ai/dsh web --no-open --port 3080`. It automatically captures the startup token and supplies a fixed local entry on port 3081. Stop any existing DSH process before starting it.
 
 This command uses the current DSH configuration and does not pin a CLI version
 or require a new `DSH_HOME`. If the shell already defines `DSH_HOME`, keep using
@@ -57,7 +59,18 @@ in this repository. See the upstream
 [Web deployment guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/guide/public-deployments.md)
 for deployment-specific configuration supported by the chosen DSH version.
 
-Once a public base address is available:
+## Local portfolio link
+
+The local frontend configuration points “Try My Meme” to
+`http://127.0.0.1:3081/`. Start DSH with `node scripts/start-dsh.mjs` (or
+`make dev-dsh`), then use the Overview button. The helper redirects to the
+current tokenized DSH URL on port 3080. Tokens stay in memory; redirects are not
+cached. Restarting the helper captures the new token without editing the frontend.
+Keep the helper running. This loopback entry is for local interviews, not remote
+visitors. Running the original `npx ... web --no-open` command directly still
+works, but does not start the automatic portfolio entry.
+
+For public hosting, once a public base address is available:
 
 1. Copy `frontend/.env.example` to `frontend/.env.local`.
 2. Set `NEXT_PUBLIC_DSH_WEB_URL` to that HTTP(S) base address.

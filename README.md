@@ -23,7 +23,7 @@ This repository is also a learning project for agent application engineering. Th
 - The plugin is compatible with the DSH `0.2.0-rc.2` plugin API and can be
   installed in the built-in DSH Web UI for Chat and Trajectory inspection.
 - Agent behavior has been inspected through Harness trajectories.
-- A deterministic evaluator checks required tools, forbidden tools, and tool ordering.
+- A deterministic evaluator checks required tools, forbidden tools, and tool ordering. A separate result validator correlates business-tool calls with successful results and checks required artifact fields.
 - The Python SDK runner executes E1–E5 in isolated sessions, saves their JSONL trajectories, and invokes the deterministic evaluator.
 - The automated E1–E5 behavior suite has produced a 5/5 pass result.
 - The first E5 repeated-run sample passed 4/5 isolated runs (80%). After strengthening the Skill's mandatory content-type gate, two further samples passed 5/5 and 4/5, for a combined post-change result of 9/10 (90%).
@@ -34,22 +34,19 @@ This repository is also a learning project for agent application engineering. Th
 
 ### Current limitations
 
-- The evaluator checks tool-call behavior, not meme relevance, tone, visual quality, or tool-result quality.
+- The evaluator checks behavior and rendered tool-result structure, not live image availability, relevance, tone, visual quality, or delivery in the final response.
 - Repeated-run reliability measurements are a development signal, not a production guarantee.
 - The application relies on conversation history for short multi-turn edits; it has no explicit task-state store or long-term memory system.
 - RAG, MCP integration, and multi-agent orchestration are not implemented.
-- The public DSH demo has not been deployed or configured. The frontend shows “Live demo coming soon” until its address is set.
+- The current demo link targets the local demo entry at `http://127.0.0.1:3081/`; public DSH hosting remains pending. Remote visitors cannot use this local address.
 - The recorded Agent runs did not capture a code version; the evidence page reports this as “Not recorded”.
 
 ### Current next step
 
-Evaluate Tool results and final artifact validity, not only Tool selection:
-
-```text
-tool call
-  -> tool result
-  -> validate returned artifact fields and success state
-```
+The first tool-result validity checks are implemented. Next, evaluate final
+artifact delivery and caption fidelity while keeping semantic/visual quality
+as a separate concern. Public DSH deployment remains optional and pending;
+local portfolio and native DSH Web are the current interview setup.
 
 ## Project layout
 
@@ -84,16 +81,19 @@ npm run dev
 In another terminal, from the repository root, start native DSH Chat:
 
 ```bash
-npm_config_cache="$PWD/.npm-cache" npx --yes @deepseek-ai/dsh web --no-open
+node scripts/start-dsh.mjs
 ```
 
-The portfolio does not require the Python API. Open the complete DSH startup
-URL printed in the second terminal to use Chat and Trajectory.
+The helper launches DSH on port 3080 and automatically captures its current
+startup token. “Try My Meme” uses the fixed entry on port 3081, which redirects
+to that authenticated URL. Stop an existing DSH before launching the helper;
+keep the helper running during the demo. The portfolio does not require the Python API.
 
 The root `Makefile` is an optional shortcut collection, not a dependency manager:
 
 | Command | Purpose |
 |---|---|
+| `make dev-dsh` | Launch native DSH and the automatic local demo entry. |
 | `make dev-frontend` | Equivalent to `cd frontend && npm run dev`. |
 | `make install-plugin` / `make build-plugin` | Install or build the independent `plugin/` package. |
 | `make build` | Build the portfolio and plugin. |
@@ -127,15 +127,17 @@ The `meme-selection` Skill currently lives at the repository-level path `.agents
 The frontend is a project showcase with two pages:
 
 - **Overview (`/`)**: a short project description, one live-demo entry, and three brief contributions (Skill, tools, evaluations). Detailed evidence stays on the Evaluations page.
-- **Evaluations (`/evals`)**: accessed through the top navigation; shows case rules, actual calls, verdicts, record timestamps, source hashes, and a downloadable snapshot. The repeated E5 experiment is described separately.
+- **Evaluations (`/evals`)**: accessed through the top navigation; shows case rules, actual calls, separate behavior/output verdicts, record timestamps, source hashes, and a downloadable snapshot. The repeated E5 experiment is described separately.
 
 
 Native DSH Web provides the live Chat and Trajectory experience. The portfolio
 pages can run without the Python API; the backend remains available for the
 previous custom-Chat integration.
 
-Configure `NEXT_PUBLIC_DSH_WEB_URL` in `frontend/.env.local` to link to a deployed
-DSH Web base address, then restart development or rebuild. Do not include a
+Configure `NEXT_PUBLIC_DSH_WEB_URL` in `frontend/.env.local` to link to DSH Web.
+The current local setup uses `http://127.0.0.1:3081/`; restart development or
+rebuild after changing the setting. For a public portfolio, replace it with a
+deployed DSH Web base address. Do not include a
 launch credential in this public variable. With no address configured, the
 page explicitly shows that the demo is not yet available. DSH hosting and
 browser access are separate from publishing the portfolio. The chosen interview
@@ -160,10 +162,11 @@ recomputed suite, and the original run code version is marked as unrecorded.
 From the repository root, start the built-in Web UI:
 
 ```bash
-npm_config_cache="$PWD/.npm-cache" npx --yes @deepseek-ai/dsh web --no-open
+node scripts/start-dsh.mjs
 ```
 
-This uses the current DSH configuration. There is no need to set `DSH_HOME`
+The helper automatically captures the new token on each launch; no token is
+saved in frontend configuration. It uses the current DSH configuration. There is no need to set `DSH_HOME`
 for this startup command. If your shell already exports `DSH_HOME`, DSH uses
 that setting.
 

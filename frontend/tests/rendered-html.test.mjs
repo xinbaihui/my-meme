@@ -30,6 +30,8 @@ test('evaluation page identifies the sample and displays recorded E5 call order'
   const e5 = snapshot.cases.find(item => item.id === 'E5');
   for (const call of e5.calls) assert.ok(html.includes(`seq ${call.seq} · T${call.turn}`));
   assert.match(html, /not recomputed here/);
+  assert.match(html, /TOOL RESULT VERDICT/);
+  assert.match(html, /Tool results: 5 \/ 5 applicable cases passed/);
 });
 
 test('published snapshot reproduces source tool calls without raw payloads', async () => {
