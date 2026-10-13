@@ -31,8 +31,19 @@ the existing pnpm lockfile is retained.
 
 ## Live demo link
 
-Copy `.env.example` to `.env.local`. For local interviews, keep
-`NEXT_PUBLIC_DSH_WEB_URL=http://127.0.0.1:3081/` and start DSH from the repository root:
+Copy `.env.example` to `.env.local`. The deployed interview entry is:
+
+```text
+https://121.40.130.20/demo
+```
+
+Nginx requires the shared interview credentials, then the loopback helper
+redirects to the current DSH process token. The token stays in server memory
+and is never included in frontend configuration. DSH and the helper run as the
+`my-meme-dsh` systemd service on the ECS host.
+
+For local-only development, set
+`NEXT_PUBLIC_DSH_WEB_URL=http://127.0.0.1:3081/` and run:
 
 ```bash
 node scripts/start-dsh.mjs
@@ -47,9 +58,8 @@ the helper. Keep the helper running while using “Try My Meme”.
 The link opens in a new tab. Restart frontend development or rebuild after
 changing the environment setting. Without an address, the Overview shows
 “Live demo coming soon”. This public setting must never contain a token or API
-key. For public hosting, replace it with a deployed DSH base address and arrange
-visitor authentication separately. The local helper binds only to loopback and
-is for demonstrations on this computer. Neither page requires the Python API.
+key. The public entry uses HTTPS and Nginx Basic Authentication. The local
+helper binds only to loopback. Neither page requires the Python API.
 
 ## Recorded evaluation evidence
 

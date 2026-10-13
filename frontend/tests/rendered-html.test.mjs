@@ -15,6 +15,8 @@ test('portfolio renders without a backend and offers evaluation evidence', async
   const html = (await response.text()).replace(/<!--.*?-->/gs, "");
   assert.match(html, /What I built/);
   assert.match(html, /href="\/evals"/);
+  assert.match(html, /href="https:\/\/121\.40\.130\.20\/demo"/);
+  assert.doesNotMatch(html, /[?&]token=/);
   assert.doesNotMatch(html, /View evaluations|The right/);
   assert.doesNotMatch(html, /id="meme-prompt"|chat-composer|Find Memes →/);
 });

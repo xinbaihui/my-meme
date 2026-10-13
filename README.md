@@ -38,7 +38,7 @@ This repository is also a learning project for agent application engineering. Th
 - Repeated-run reliability measurements are a development signal, not a production guarantee.
 - The application relies on conversation history for short multi-turn edits; it has no explicit task-state store or long-term memory system.
 - RAG, MCP integration, and multi-agent orchestration are not implemented.
-- The current demo link targets the local demo entry at `http://127.0.0.1:3081/`; public DSH hosting remains pending. Remote visitors cannot use this local address.
+- The interview demo is published at `https://121.40.130.20/demo` behind HTTPS and Nginx Basic Authentication.
 - The recorded Agent runs did not capture a code version; the evidence page reports this as “Not recorded”.
 
 ### Current next step
@@ -135,14 +135,11 @@ pages can run without the Python API; the backend remains available for the
 previous custom-Chat integration.
 
 Configure `NEXT_PUBLIC_DSH_WEB_URL` in `frontend/.env.local` to link to DSH Web.
-The current local setup uses `http://127.0.0.1:3081/`; restart development or
-rebuild after changing the setting. For a public portfolio, replace it with a
-deployed DSH Web base address. Do not include a
-launch credential in this public variable. With no address configured, the
-page explicitly shows that the demo is not yet available. DSH hosting and
-browser access are separate from publishing the portfolio. The chosen interview
-plan is to publish the existing DSH Web interface directly rather than embed it
-in an iframe or build a custom DSH client. Deployment remains pending.
+The interview deployment uses `https://121.40.130.20/demo`; restart development
+or rebuild after changing the setting. Do not include a launch credential in
+this public variable. Nginx authenticates visitors and the loopback helper
+resolves the current process token. The existing DSH Web interface is published
+directly rather than embedded in an iframe or replaced by a custom DSH client.
 See [DSH demo setup](docs/dsh.md).
 
 The evaluation page consumes a checked-in, sanitized snapshot derived from

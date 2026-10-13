@@ -49,15 +49,20 @@ The source stays in `plugin/`. The plugin declares compatibility
 with the DSH `0.2.0-rc.2` API; the startup command follows the existing unpinned
 CLI workflow. Verify compatibility when changing the installed DSH version.
 
-## Interview publishing plan
+## Public interview deployment
 
-Publish a running DSH Web service, not only its static assets. Hosting and
-browser access are separate from deploying the portfolio. A public address,
-working browser authentication, and the expected My Meme workspace/tools must
-be verified before sharing the demo. Public deployment is not yet implemented
-in this repository. See the upstream
+The interview service runs on the Ubuntu ECS host and is available through
+`https://121.40.130.20/demo`. Nginx terminates TLS with a short-lived
+Let's Encrypt IP certificate and requires Basic Authentication. It proxies only
+to loopback services: DSH on port 3080 and the current-token redirect helper on
+port 3081. Neither port is exposed by the ECS security group.
+
+The `my-meme-dsh` systemd unit starts both loopback services at boot and restarts
+them after failure. Certbot renews the certificate and a deploy hook reloads
+Nginx. The public frontend stores only the stable `/demo` URL; the process token
+remains on the server. See the upstream
 [Web deployment guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/guide/public-deployments.md)
-for deployment-specific configuration supported by the chosen DSH version.
+for the proxy requirements followed here.
 
 ## Local portfolio link
 
@@ -70,14 +75,15 @@ Keep the helper running. This loopback entry is for local interviews, not remote
 visitors. Running the original `npx ... web --no-open` command directly still
 works, but does not start the automatic portfolio entry.
 
-For public hosting, once a public base address is available:
+For the deployed interview site:
 
 1. Copy `frontend/.env.example` to `frontend/.env.local`.
-2. Set `NEXT_PUBLIC_DSH_WEB_URL` to that HTTP(S) base address.
+2. Set `NEXT_PUBLIC_DSH_WEB_URL=https://121.40.130.20/demo`.
 3. Restart frontend development or rebuild the deployed portfolio.
 4. Verify the “Try My Meme” link and DSH access in a fresh browser session.
 
 The setting is visible in the public frontend; do not include a launch token or
-API key. The link itself does not authenticate the visitor. Until configured,
-the Overview shows “Live demo coming soon”. No per-user isolation is supplied
-by the portfolio, and the demo has not been validated as a multi-user service.
+API key. Nginx authenticates the visitor before the helper resolves the current
+process token. Until configured, the Overview shows “Live demo coming soon”.
+The deployment is intended for controlled interview access, not concurrent
+untrusted users.

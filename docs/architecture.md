@@ -29,11 +29,12 @@ state, and Trajectory display.
 
 `NEXT_PUBLIC_DSH_WEB_URL` selects the external demo destination. It is a public
 build-time frontend setting, not an authentication mechanism. Without a valid
-HTTP(S) address, the Overview shows “Live demo coming soon”. The public DSH
-service has not been deployed; public browser access must be configured separately.
-Locally, `scripts/start-dsh.mjs` captures the native startup URL in memory and
+HTTP(S) address, the Overview shows “Live demo coming soon”. The deployed value
+is `https://121.40.130.20/demo`. Nginx supplies HTTPS and Basic Authentication.
+Behind it, `scripts/start-dsh.mjs` captures the native startup URL in memory and
 provides a loopback-only entry on port 3081 that redirects to DSH on port 3080.
-The frontend uses that fixed entry, so a changed startup token needs no frontend edit.
+The frontend uses the fixed `/demo` entry, so a changed process token needs no
+frontend edit.
 
 The Python API in `backend/` remains available for earlier SDK/custom-Chat
 integrations. The portfolio does not use it, and its SDK sessions are not
@@ -154,7 +155,7 @@ It should not ask when the request is sufficiently specific or the user explicit
 - Result validation covers recorded rendered fields and success flags, not final artifact delivery or live image availability. No semantic or visual-quality evaluator.
 - No RAG, MCP integration, or multi-agent architecture.
 - Local DSH profile installation is machine-specific; deploying the demo requires installing `plugin/` and making the repository Skill available on the host.
-- The public demo and multi-user isolation have not been verified.
+- The public demo is intended for controlled interview access; multi-user isolation has not been implemented.
 - Public evaluation evidence is an offline snapshot; it does not update from live DSH Chat sessions.
 
 ## Next step
