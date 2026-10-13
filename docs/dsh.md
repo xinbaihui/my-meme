@@ -78,7 +78,7 @@ works, but does not start the automatic portfolio entry.
 For the deployed interview site:
 
 1. Copy `frontend/.env.example` to `frontend/.env.local`.
-2. Set `NEXT_PUBLIC_DSH_WEB_URL=https://121.40.130.20/demo`.
+2. Set `VITE_DSH_WEB_URL=https://121.40.130.20/demo`.
 3. Restart frontend development or rebuild the deployed portfolio.
 4. Verify the “Try My Meme” link and DSH access in a fresh browser session.
 

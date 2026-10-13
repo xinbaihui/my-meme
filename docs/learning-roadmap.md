@@ -60,7 +60,7 @@ state machine. A customized DSH client remains an option, not the current plan.
 
 The portfolio is implemented and has passed build and rendered-page/evidence
 tests. Public DSH deployment and access verification are still pending. Set
-`NEXT_PUBLIC_DSH_WEB_URL` after a public base address is available, then rebuild
+`VITE_DSH_WEB_URL` after a public base address is available, then rebuild
 the portfolio. No launch credential belongs in the frontend configuration.
 The Python API is retained but is optional for this presentation.
 

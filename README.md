@@ -28,7 +28,7 @@ This repository is also a learning project for agent application engineering. Th
 - The automated E1–E5 behavior suite has produced a 5/5 pass result.
 - The first E5 repeated-run sample passed 4/5 isolated runs (80%). After strengthening the Skill's mandatory content-type gate, two further samples passed 5/5 and 4/5, for a combined post-change result of 9/10 (90%).
 - `sdk-smoke.py` verifies that an SDK-launched Harness instance can load the Skill and all three tools.
-- The independent frontend presents a compact Overview and an Evaluations page.
+- The independent React + Vite frontend presents a compact Overview and an Evaluations page.
 - Evaluations renders real E1–E5 verdicts and tool-call sequences from an exported snapshot, with a downloadable evidence file.
 - The live experience uses native DSH Web Chat and Trajectory; the portfolio does not implement its own Chat.
 
@@ -43,10 +43,10 @@ This repository is also a learning project for agent application engineering. Th
 
 ### Current next step
 
-The first tool-result validity checks are implemented. Next, evaluate final
-artifact delivery and caption fidelity while keeping semantic/visual quality
-as a separate concern. Public DSH deployment remains optional and pending;
-local portfolio and native DSH Web are the current interview setup.
+The portfolio now builds as a static React + Vite site. Next, deploy its
+`frontend/dist/` output through the existing ECS Nginx server, then connect the
+Evaluations page to the planned API. The native DSH Web demo is already
+published at the protected `/demo` entry.
 
 ## Project layout
 
@@ -65,8 +65,7 @@ my-meme/
 This is one Git repository without Nx or npm/pnpm workspaces. Each component
 installs its own dependencies; there is no root dependency manifest, lockfile,
 or hoisting. The DSH plugin remains in its existing `plugin/` directory.
-The frontend uses npm and `package-lock.json`; its existing pnpm lockfile is
-retained, but npm is the documented installer.
+The frontend uses npm and `package-lock.json`.
 
 ## Local startup
 
@@ -134,7 +133,7 @@ Native DSH Web provides the live Chat and Trajectory experience. The portfolio
 pages can run without the Python API; the backend remains available for the
 previous custom-Chat integration.
 
-Configure `NEXT_PUBLIC_DSH_WEB_URL` in `frontend/.env.local` to link to DSH Web.
+Configure `VITE_DSH_WEB_URL` in `frontend/.env.local` to link to DSH Web.
 The interview deployment uses `https://121.40.130.20/demo`; restart development
 or rebuild after changing the setting. Do not include a launch credential in
 this public variable. Nginx authenticates visitors and the loopback helper

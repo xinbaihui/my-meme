@@ -188,7 +188,7 @@ consistency, empty-search recovery, and not-applicable cases.
 
 ## Evidence on the portfolio
 
-`frontend/app/evals/page.tsx` reads the checked-in
+`frontend/src/pages/EvaluationsPage.tsx` reads the checked-in
 `frontend/public/evaluations/snapshot.json`. This is an offline evidence
 snapshot, not a live status dashboard or a model execution endpoint.
 
@@ -232,7 +232,7 @@ cd frontend
 npm test
 ```
 
-The existing tests build and render both pages without the Python API, check
+The existing tests build and render both React routes without the Python API, check
 sample/metadata labeling, and compare exported calls with local source records.
 DSH Trajectory provides live execution inspection; the public evaluation page
 provides a fixed, independently inspectable behavior sample.

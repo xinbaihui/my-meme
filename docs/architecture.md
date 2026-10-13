@@ -20,14 +20,14 @@ flowchart LR
     X --> E
 ```
 
-The portfolio is implemented in `frontend/`. It presents a short description,
+The portfolio is implemented as a static React + Vite application in `frontend/`. It presents a short description,
 a live-demo entry, and three contribution summaries. Detailed metrics and
 recorded evidence live on `/evals`, reached through the header navigation.
 There is no embedded Chat or iframe, and no text-to-option parsing in the current
 frontend. DSH owns message input, questions, answers, tool interaction, session
 state, and Trajectory display.
 
-`NEXT_PUBLIC_DSH_WEB_URL` selects the external demo destination. It is a public
+`VITE_DSH_WEB_URL` selects the external demo destination. It is a public
 build-time frontend setting, not an authentication mechanism. Without a valid
 HTTP(S) address, the Overview shows “Live demo coming soon”. The deployed value
 is `https://121.40.130.20/demo`. Nginx supplies HTTPS and Basic Authentication.
