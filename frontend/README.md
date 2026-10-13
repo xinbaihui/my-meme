@@ -1,6 +1,6 @@
 # My Meme portfolio
 
-This frontend presents the project overview and saved evaluation evidence.
+This React + Vite frontend presents the project overview and saved evaluation evidence.
 Live Chat is provided by a separate, native DSH Web deployment. Neither page
 requires the Python API to be running.
 
@@ -26,8 +26,8 @@ npm run dev
 ```
 
 From the repository root: `make dev-frontend`, `make build-frontend`, or
-`make test-frontend`. npm and `package-lock.json` are the documented workflow;
-the existing pnpm lockfile is retained.
+`make test-frontend`. npm and `package-lock.json` are the frontend workflow.
+`npm run build` writes the static site to `frontend/dist/`.
 
 ## Live demo link
 
@@ -43,7 +43,7 @@ and is never included in frontend configuration. DSH and the helper run as the
 `my-meme-dsh` systemd service on the ECS host.
 
 For local-only development, set
-`NEXT_PUBLIC_DSH_WEB_URL=http://127.0.0.1:3081/` and run:
+`VITE_DSH_WEB_URL=http://127.0.0.1:3081/` and run:
 
 ```bash
 node scripts/start-dsh.mjs
@@ -81,7 +81,7 @@ The original Agent run code version was not captured, so the page states
 Repeated E5 run totals are separately labeled as documented experiments, not
 recomputed snapshot results.
 
-The rendered-page tests require the local source trajectories and run against the build and check that the portfolio
+The rendered-page tests require the local source trajectories. They render the React routes in the Vite test environment and check that the portfolio
 works without the Python backend, that evaluation evidence is presented as a
 sample, and that exported calls match local source records. Output checks use
 the plugin-rendered text stored in those records; they do not fetch image URLs

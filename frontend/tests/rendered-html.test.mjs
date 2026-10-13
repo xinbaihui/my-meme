@@ -1,18 +1,23 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, { before } from 'node:test';
 import { readFile } from 'node:fs/promises';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { build } from 'vite';
 
-async function render(path) {
-  const { default: worker } = await import('../dist/server/index.js');
-  return worker.fetch(new Request(`http://localhost${path}`, { headers: { accept: 'text/html' } }),
-    { ASSETS: { fetch: async () => new Response('Not found', { status: 404 }) } },
-    { waitUntil() {}, passThroughOnException() {} });
+let App;
+
+before(async () => {
+  await build({ build: { ssr: 'src/App.tsx', outDir: '.test-dist', emptyOutDir: true }, logLevel: 'silent' });
+  ({ default: App } = await import('../.test-dist/App.js'));
+});
+
+async function render(pathname) {
+  return renderToStaticMarkup(createElement(App, { pathname }));
 }
 
 test('portfolio renders without a backend and offers evaluation evidence', async () => {
-  const response = await render('/');
-  assert.equal(response.status, 200);
-  const html = (await response.text()).replace(/<!--.*?-->/gs, "");
+  const html = await render('/');
   assert.match(html, /What I built/);
   assert.match(html, /href="\/evals"/);
   assert.match(html, /href="https:\/\/121\.40\.130\.20\/demo"/);
@@ -23,9 +28,7 @@ test('portfolio renders without a backend and offers evaluation evidence', async
 
 test('evaluation page identifies the sample and displays recorded E5 call order', async () => {
   const snapshot = JSON.parse(await readFile(new URL('../public/evaluations/snapshot.json', import.meta.url), 'utf8'));
-  const response = await render('/evals');
-  assert.equal(response.status, 200);
-  const html = (await response.text()).replace(/<!--.*?-->/gs, "");
+  const html = await render('/evals');
   assert.match(html, /ONE SUITE SAMPLE/);
   assert.match(html, /Not recorded/);
   assert.match(html, /Download evidence snapshot/);

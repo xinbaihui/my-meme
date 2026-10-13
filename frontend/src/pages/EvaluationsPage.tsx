@@ -1,13 +1,12 @@
-"use client";
+import { useState } from "react";
+import SiteHeader from "../SiteHeader";
+import report from "../../public/evaluations/snapshot.json";
 
-import { useState } from 'react';
-import SiteHeader from '../../components/site-header';
-import report from '../../public/evaluations/snapshot.json';
+const titles: Record<string, string> = { E1: "Template search", E2: "Reaction GIF search", E3: "Direct generation", E4: "Delegated choice", E5: "Clarify before action" };
+const colors: Record<string, string> = { E1: "blue", E2: "pink", E3: "orange", E4: "green", E5: "violet" };
 
-const titles: Record<string, string> = { E1: 'Template search', E2: 'Reaction GIF search', E3: 'Direct generation', E4: 'Delegated choice', E5: 'Clarify before action' };
-const colors: Record<string, string> = { E1: 'blue', E2: 'pink', E3: 'orange', E4: 'green', E5: 'violet' };
 function date(value: string | null) {
-  return value ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Shanghai' }).format(new Date(value)) + ' (UTC+8)' : 'Not recorded';
+  return value ? new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Shanghai" }).format(new Date(value)) + " (UTC+8)" : "Not recorded";
 }
 
 export default function EvaluationsPage() {
@@ -32,30 +31,29 @@ export default function EvaluationsPage() {
     <section className="eval-workspace shell">
       <div className="case-list">
         <div className="case-list-heading"><span>CASE</span><span>BEHAVIOR</span><span>TOOLS CALLED</span><span>BEHAVIOR / OUTPUT</span></div>
-        {report.cases.map(item => <button className={`case-row ${selected.id === item.id ? 'selected' : ''}`} onClick={() => setSelected(item)} aria-pressed={selected.id === item.id} key={item.id}>
+        {report.cases.map(item => <button className={`case-row ${selected.id === item.id ? "selected" : ""}`} onClick={() => setSelected(item)} aria-pressed={selected.id === item.id} key={item.id}>
           <span className={`case-id ${colors[item.id]}`}>{item.id}</span><span><strong>{titles[item.id]}</strong><small>{item.prompt}</small></span>
-          <code>{item.calls.filter(call => ['search_memes','search_giphy','generate_meme','ask_user_question'].includes(call.name)).map(call => call.name).join(' → ') || 'No content tool'}</code>
-          <div className="case-verdicts"><span className={item.result === 'PASS' ? 'pass-badge' : 'fail-badge'}>Behavior {item.result}</span><span className={!item.toolResults.applicable ? 'neutral-badge' : item.toolResults.passed ? 'pass-badge' : 'fail-badge'}>Output {!item.toolResults.applicable ? 'N/A' : item.toolResults.passed ? 'PASS' : 'FAIL'}</span></div>
+          <code>{item.calls.filter(call => ["search_memes", "search_giphy", "generate_meme", "ask_user_question"].includes(call.name)).map(call => call.name).join(" → ") || "No content tool"}</code>
+          <div className="case-verdicts"><span className={item.result === "PASS" ? "pass-badge" : "fail-badge"}>Behavior {item.result}</span><span className={!item.toolResults.applicable ? "neutral-badge" : item.toolResults.passed ? "pass-badge" : "fail-badge"}>Output {!item.toolResults.applicable ? "N/A" : item.toolResults.passed ? "PASS" : "FAIL"}</span></div>
         </button>)}
       </div>
       <aside className="case-detail">
-        <div className="detail-top"><span className={`case-id ${colors[selected.id]}`}>{selected.id}</span><span className={selected.result === 'PASS' ? 'pass-badge' : 'fail-badge'}>{selected.result}</span></div>
+        <div className="detail-top"><span className={`case-id ${colors[selected.id]}`}>{selected.id}</span><span className={selected.result === "PASS" ? "pass-badge" : "fail-badge"}>{selected.result}</span></div>
         <h2>{titles[selected.id]}</h2><span className="detail-label">EXACT TEST PROMPT</span><blockquote>{selected.prompt}</blockquote>
         <span className="detail-label">BEHAVIOR UNDER TEST</span><p>{selected.description}</p>
         <span className="detail-label">CHECKED CONSTRAINTS</span>
         <ul className="constraint-list">
-          {selected.requiredTools.length > 0 && <li>Require: {selected.requiredTools.join(', ')}</li>}
-          {selected.forbiddenTools.length > 0 && <li>Forbid: {selected.forbiddenTools.join(', ')}</li>}
-          {'forbiddenToolsInTurn' in selected && selected.forbiddenToolsInTurn?.map(rule => <li key={`forbid-${rule.turn}`}>Turn {rule.turn}: forbid {rule.tools.join(', ')}</li>)}
-          {'requiredToolsInTurn' in selected && selected.requiredToolsInTurn?.map(rule => <li key={`require-${rule.turn}`}>Turn {rule.turn}: require {rule.tools.join(', ')}</li>)}
+          {selected.requiredTools.length > 0 && <li>Require: {selected.requiredTools.join(", ")}</li>}
+          {selected.forbiddenTools.length > 0 && <li>Forbid: {selected.forbiddenTools.join(", ")}</li>}
+          {"forbiddenToolsInTurn" in selected && selected.forbiddenToolsInTurn?.map(rule => <li key={`forbid-${rule.turn}`}>Turn {rule.turn}: forbid {rule.tools.join(", ")}</li>)}
+          {"requiredToolsInTurn" in selected && selected.requiredToolsInTurn?.map(rule => <li key={`require-${rule.turn}`}>Turn {rule.turn}: require {rule.tools.join(", ")}</li>)}
         </ul>
-        {selected.id === 'E5' && <p>The runner replies in turn 2: “Choose a static meme template. Keep it light and sarcastic; do not generate it yet.” The checks enforce no content tools in turn 1 and template search in turn 2; they do not independently prove question quality.</p>}
+        {selected.id === "E5" && <p>The runner replies in turn 2: “Choose a static meme template. Keep it light and sarcastic; do not generate it yet.” The checks enforce no content tools in turn 1 and template search in turn 2; they do not independently prove question quality.</p>}
         <span className="detail-label">EVALUATOR VERDICT</span><p>{selected.reason}</p>
-        <span className="detail-label">TOOL RESULT VERDICT</span>
-        <p>{selected.toolResults.reason}</p>
+        <span className="detail-label">TOOL RESULT VERDICT</span><p>{selected.toolResults.reason}</p>
         <div className="output-checks">{selected.toolResults.checks.map(check => <div key={check.callSeq}>
           <strong>{check.tool} · {check.status}</strong>
-          <code>Call seq {check.callSeq} → result {check.resultSeq ?? 'missing'} · {check.artifactCount} artifact(s)</code>
+          <code>Call seq {check.callSeq} → result {check.resultSeq ?? "missing"} · {check.artifactCount} artifact(s)</code>
           <p>{check.reason}</p>
         </div>)}</div>
         <span className="detail-label">RECORDED TOOL CALLS</span>

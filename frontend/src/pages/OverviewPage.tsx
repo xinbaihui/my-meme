@@ -1,7 +1,7 @@
-import SiteHeader from '../components/site-header';
-import { demoUrl } from '../lib/demo';
+import SiteHeader from "../SiteHeader";
+import { demoUrl } from "../demo";
 
-export default function Home() {
+export default function OverviewPage() {
   const demo = demoUrl();
   return <main>
     <SiteHeader active="overview" />
