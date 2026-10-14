@@ -2,7 +2,7 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { startupUrl, demoHandler } from './dsh-demo.mjs';
+import { startupUrl, demoHandler, dshArguments } from './dsh-demo.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 let currentUrl;
@@ -15,7 +15,7 @@ server.on('error', error => {
 });
 server.listen(3081, '127.0.0.1', () => {
   console.log('My Meme demo entry: http://127.0.0.1:3081/');
-  child = spawn('npx', ['--yes', '@deepseek-ai/dsh', 'web', '--no-open', '--port', '3080'], {
+  child = spawn('npx', dshArguments(process.env.DSH_TRUSTED_HOST), {
     cwd: root, env: { ...process.env, npm_config_cache: `${root}.npm-cache` },
     detached: process.platform !== 'win32', stdio: ['inherit', 'pipe', 'pipe'],
   });

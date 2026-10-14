@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { startupUrl, demoHandler } from '../dsh-demo.mjs';
+import { startupUrl, demoHandler, dshArguments } from '../dsh-demo.mjs';
+
+test('DSH arguments add one optional trusted host', () => {
+  assert.deepEqual(dshArguments(), ['--yes', '@deepseek-ai/dsh', 'web', '--no-open', '--port', '3080']);
+  assert.deepEqual(dshArguments(' 121.40.130.20 '), ['--yes', '@deepseek-ai/dsh', 'web', '--no-open', '--port', '3080', '--trusted-host', '121.40.130.20']);
+  assert.throws(() => dshArguments('https://example.com/path'), /DSH_TRUSTED_HOST/);
+});
 const launch = token => `http://127.0.0.1:3080/?token=${token}`;
 function request(handler, overrides = {}) {
   const reply = { headers: {}, status: undefined, body: undefined,

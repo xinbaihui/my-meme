@@ -33,6 +33,8 @@ HTTP(S) address, the Overview shows “Live demo coming soon”. The deployed va
 is `https://121.40.130.20/demo`. Nginx supplies HTTPS and Basic Authentication.
 Behind it, `scripts/start-dsh.mjs` captures the native startup URL in memory and
 provides a loopback-only entry on port 3081 that redirects to DSH on port 3080.
+The ECS environment sets `DSH_TRUSTED_HOST`; the helper converts it to one DSH
+`--trusted-host` argument without hard-coding the deployment address in source.
 The frontend uses the fixed `/demo` entry, so a changed process token needs no
 frontend edit.
 

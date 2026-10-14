@@ -11,6 +11,16 @@ export function startupUrl(line) {
   } catch { /* Ignore non-startup or unsupported output without exposing credentials. */ }
 }
 
+export function dshArguments(trustedHost = '') {
+  const args = ['--yes', '@deepseek-ai/dsh', 'web', '--no-open', '--port', '3080'];
+  const host = trustedHost.trim();
+  if (!host) return args;
+  if (!/^[A-Za-z0-9.-]+(?::[0-9]{1,5})?$/.test(host)) {
+    throw new Error('DSH_TRUSTED_HOST must be a hostname or IP address, optionally followed by a port.');
+  }
+  return [...args, '--trusted-host', host];
+}
+
 export function demoHandler(getUrl) {
   return (request, response) => {
     response.setHeader('Cache-Control', 'no-store');

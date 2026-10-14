@@ -16,7 +16,7 @@ From the My Meme repository root:
 node scripts/start-dsh.mjs
 ```
 
-The helper runs `npm_config_cache="$PWD/.npm-cache" npx --yes @deepseek-ai/dsh web --no-open --port 3080`. It automatically captures the startup token and supplies a fixed local entry on port 3081. Stop any existing DSH process before starting it.
+The helper runs `npm_config_cache="$PWD/.npm-cache" npx --yes @deepseek-ai/dsh web --no-open --port 3080`. When `DSH_TRUSTED_HOST` is set, it appends one `--trusted-host` argument for that hostname or IP address. It automatically captures the startup token and supplies a fixed local entry on port 3081. Stop any existing DSH process before starting it.
 
 This command uses the current DSH configuration and does not pin a CLI version
 or require a new `DSH_HOME`. If the shell already defines `DSH_HOME`, keep using
@@ -63,6 +63,10 @@ Nginx. The public frontend stores only the stable `/demo` URL; the process token
 remains on the server. See the upstream
 [Web deployment guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/guide/public-deployments.md)
 for the proxy requirements followed here.
+
+The systemd environment file sets `DSH_TRUSTED_HOST=121.40.130.20`. This keeps
+the deployment-specific address out of source code while allowing DSH's browser
+trust fence to accept the public authority.
 
 ## Local portfolio link
 
