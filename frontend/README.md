@@ -1,20 +1,15 @@
 # My Meme portfolio
 
-This React + Vite frontend presents the project overview and saved evaluation evidence.
-Live Chat is provided by a separate, native DSH Web deployment. Neither page
-requires the Python API to be running.
+This React + Vite frontend presents saved evaluation evidence. Live Chat is
+provided by a separate, native DSH Web deployment. The page does not require
+the Python API to be running.
 
 ## Pages
 
-- `/` is a compact Overview: project description, live-demo entry, and three
-  short contributions (Skill, tools, evaluations).
-- `/evals` holds the detailed case results, recorded tool-call sequences,
-  snapshot metadata, downloadable evidence, and documented E5 repeat runs.
-- The header links to Overview, Evaluations, and the My Meme GitHub repository.
-  When a demo URL is configured, it also offers “Try My Meme”.
-
-The Overview stays focused on the project and live demo. Detailed evidence is
-reached through Evaluations in the header.
+- `/` shows the E1–E5 evaluation results and recorded tool-call sequences.
+- `/evals` remains usable as an older link to the same page.
+- The header links to Evaluations and the My Meme GitHub repository. When a
+  demo URL is configured, it also offers “Try My Meme”.
 
 ## Local development
 
@@ -56,10 +51,10 @@ redirect responses are not cached. Stop an existing DSH process before using
 the helper. Keep the helper running while using “Try My Meme”.
 
 The link opens in a new tab. Restart frontend development or rebuild after
-changing the environment setting. Without an address, the Overview shows
-“Live demo coming soon”. This public setting must never contain a token or API
-key. The public entry uses HTTPS and Nginx Basic Authentication. The local
-helper binds only to loopback. Neither page requires the Python API.
+changing the environment setting. Without an address, the demo link is hidden.
+This public setting must never contain a token or API key. The public entry
+uses HTTPS and Nginx Basic Authentication. The local helper binds only to
+loopback. The evaluation page does not require the Python API.
 
 ## Recorded evaluation evidence
 
@@ -72,17 +67,16 @@ The snapshot exporter reads the root `evals/E1-session.jsonl` through
 `E5-session.jsonl`, rechecks them with the existing behavior evaluator, and
 writes `public/evaluations/snapshot.json`. It does not call a model or run new
 Agent sessions. Source logs must be present locally to regenerate the snapshot.
-The checked-in snapshot lets the public pages run without those private logs.
+The checked-in snapshot lets the public page run without those private logs.
 
 Case specifications, behavior verdicts, tool names/sequence/turn, sanitized
-per-call result status/count/reason, source timestamps and hashes are exported. Tool arguments, results and raw messages are omitted.
-The original Agent run code version was not captured, so the page states
-“Not recorded”; source hashes identify the input records and evaluator instead.
-Repeated E5 run totals are separately labeled as documented experiments, not
-recomputed snapshot results.
+per-call result status/count/reason, source timestamps and hashes are exported.
+Tool arguments, results and raw messages are omitted. The original Agent run
+code version was not captured. Repeated E5 run totals are documented separately,
+not recomputed by the public page.
 
-The rendered-page tests require the local source trajectories. They render the React routes in the Vite test environment and check that the portfolio
-works without the Python backend, that evaluation evidence is presented as a
-sample, and that exported calls match local source records. Output checks use
+The rendered-page tests require the local source trajectories. They render the
+homepage and older `/evals` URL in the Vite test environment and check that
+evaluation evidence is presented and exported calls match local source records. Output checks use
 the plugin-rendered text stored in those records; they do not fetch image URLs
 or prove final-message delivery. Behavior and result-check totals are separate.

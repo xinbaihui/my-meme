@@ -187,6 +187,13 @@ If the search returns no useful candidates, refine the query and try once
 more. If the second search is still unsuccessful, explain that no suitable
 result was found and ask the user to refine the request.
 
+If `search_giphy` reports a connection failure or timeout, do not retry the
+same request or describe it as an empty search. Tell the user the GIF source
+is temporarily unreachable. If the user explicitly requested a GIF, ask
+whether a static meme is acceptable before using Memegen. If the user
+delegated the content type, you may switch to a static meme and explain the
+switch. Never claim that a static image is an animated GIF.
+
 ### Existing Meme or Template Requests
 
 An existing meme or template request is complete when `search_memes`
@@ -205,6 +212,8 @@ A custom meme request is complete when `generate_meme` successfully returns
 the generated meme.
 
 - Present the generated image and stop.
+- Include a clickable image URL and preserve the requested caption text in
+  the final answer. Do not claim success when the image URL is missing.
 - Do not search for alternative templates or generate additional versions
   unless the user asks for alternatives or revisions.
 

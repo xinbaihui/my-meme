@@ -12,14 +12,14 @@ before(async () => {
   ({ default: App } = await import('../.test-dist/App.js'));
 });
 
-async function render(pathname) {
-  return renderToStaticMarkup(createElement(App, { pathname }));
+async function render() {
+  return renderToStaticMarkup(createElement(App));
 }
 
-test('portfolio renders without a backend and offers evaluation evidence', async () => {
-  const html = await render('/');
-  assert.match(html, /What I built/);
-  assert.match(html, /href="\/evals"/);
+test('evaluations render as the homepage without a backend', async () => {
+  const html = await render();
+  assert.match(html, /href="\/" aria-current="page">Evaluations/);
+  assert.doesNotMatch(html, /Overview|What I built/);
   assert.match(html, /href="https:\/\/121\.40\.130\.20\/demo"/);
   assert.doesNotMatch(html, /[?&]token=/);
   assert.doesNotMatch(html, /View evaluations|The right/);
@@ -28,15 +28,19 @@ test('portfolio renders without a backend and offers evaluation evidence', async
 
 test('evaluation page identifies the sample and displays recorded E5 call order', async () => {
   const snapshot = JSON.parse(await readFile(new URL('../public/evaluations/snapshot.json', import.meta.url), 'utf8'));
-  const html = await render('/evals');
-  assert.match(html, /ONE SUITE SAMPLE/);
-  assert.match(html, /Not recorded/);
-  assert.match(html, /Download evidence snapshot/);
+  const html = await render();
+  assert.match(html, /class="score-ring">100%/);
+  assert.doesNotMatch(html, /score-card|ONE SUITE SAMPLE/);
+  assert.doesNotMatch(html, /TRAJECTORY START|SNAPSHOT EXPORTED|ORIGINAL RUN CODE VERSION|Download evidence snapshot/);
   const e5 = snapshot.cases.find(item => item.id === 'E5');
   for (const call of e5.calls) assert.ok(html.includes(`seq ${call.seq} · T${call.turn}`));
-  assert.match(html, /not recomputed here/);
-  assert.match(html, /TOOL RESULT VERDICT/);
-  assert.match(html, /Tool results: 5 \/ 5 applicable cases passed/);
+  assert.doesNotMatch(html, /E5 repeated runs|9\/10 across two later samples/);
+  assert.match(html, /Tool result verdict/);
+  assert.match(html, /100%/);
+  assert.match(html, /Behavior · 5 \/ 5 passed/);
+  assert.match(html, /Tool results · 5 \/ 5 passed/);
+  assert.match(html, /One recorded evaluation run · 5 cases/);
+  assert.doesNotMatch(html, /result-summary/);
 });
 
 test('published snapshot reproduces source tool calls without raw payloads', async () => {

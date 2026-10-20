@@ -8,6 +8,7 @@ const MEMEGEN_TEMPLATES_URL = 'https://api.memegen.link/templates/'
 const MEMEGEN_IMAGES_URL = 'https://api.memegen.link/images/'
 const GIPHY_SEARCH_URL = 'https://api.giphy.com/v1/gifs/search'
 const MAX_RESULTS = 10
+const REQUEST_TIMEOUT_MS = 8000
 // Common words add noise to token matching without describing a meme concept.
 const STOP_WORDS = new Set([
   'a', 'an', 'and', 'are', 'for', 'in', 'is', 'it', 'of', 'on', 'or', 'that',
@@ -186,6 +187,7 @@ export function apply(ctx: Context) {
       // Fetch the live template catalog instead of relying on a local mock list.
       const response = await fetch(MEMEGEN_TEMPLATES_URL, {
         headers: { accept: 'application/json' },
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       })
       if (!response.ok) {
         throw new Error(`Memegen templates request failed with status ${response.status}`)
@@ -289,6 +291,7 @@ export function apply(ctx: Context) {
           extension: 'png',
           redirect: false,
         }),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       })
       if (!response.ok) {
         throw new Error(`Memegen image request failed with status ${response.status}`)
@@ -378,7 +381,16 @@ export function apply(ctx: Context) {
       url.searchParams.set('q', query)
       url.searchParams.set('limit', String(limit))
 
-      const response = await fetch(url, { headers: { accept: 'application/json' } })
+      let response: Response
+      try {
+        response = await fetch(url, {
+          headers: { accept: 'application/json' },
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        })
+      } catch {
+        // Network errors can include the request URL, which contains the API key.
+        throw new Error('GIPHY is unreachable from this server. Check outbound connectivity to api.giphy.com:443; do not retry the same request until connectivity changes.')
+      }
       if (!response.ok) {
         // GIPHY usually returns a small JSON error body (for example, an invalid
         // API-key message). Include that message without ever exposing the key.

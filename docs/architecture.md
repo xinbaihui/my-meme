@@ -11,25 +11,23 @@ interface as separate browser destinations:
 
 ```mermaid
 flowchart LR
-    V["Visitor"] --> P["Portfolio: Overview"]
-    P --> E["Evaluations: saved evidence"]
-    P -->|"Configured external link"| W["Native DSH Web: Chat + Trajectory"]
+    V["Visitor"] --> E["Evaluations: saved evidence"]
+    E -->|"Configured external link"| W["Native DSH Web: Chat + Trajectory"]
     W --> H["DSH Agent + meme-selection Skill"]
     H --> B["plugin/: Memegen and GIPHY tools"]
     R["evals/: recorded SDK sessions"] --> X["Deterministic evaluator + snapshot exporter"]
     X --> E
 ```
 
-The portfolio is implemented as a static React + Vite application in `frontend/`. It presents a short description,
-a live-demo entry, and three contribution summaries. Detailed metrics and
-recorded evidence live on `/evals`, reached through the header navigation.
+The frontend is implemented as a static React + Vite application in `frontend/`.
+Evaluation results live at `/`; `/evals` remains usable as an older address.
 There is no embedded Chat or iframe, and no text-to-option parsing in the current
 frontend. DSH owns message input, questions, answers, tool interaction, session
 state, and Trajectory display.
 
 `VITE_DSH_WEB_URL` selects the external demo destination. It is a public
 build-time frontend setting, not an authentication mechanism. Without a valid
-HTTP(S) address, the Overview shows “Live demo coming soon”. The deployed value
+HTTP(S) address, the demo link is hidden. The deployed value
 is `https://121.40.130.20/demo`. Nginx supplies HTTPS and Basic Authentication.
 Behind it, `scripts/start-dsh.mjs` captures the native startup URL in memory and
 provides a loopback-only entry on port 3081 that redirects to DSH on port 3080.

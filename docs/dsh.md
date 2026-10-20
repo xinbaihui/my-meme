@@ -4,8 +4,8 @@
 
 DSH Web is the live interview experience: native Chat handles messages and
 user questions, results are displayed by DSH, and Trajectory exposes execution
-events. The separate portfolio presents a brief Overview and saved evaluation
-evidence. Its live-demo link opens DSH in a new tab; there is no iframe or
+events. The separate frontend presents saved evaluation evidence. Its live-demo
+link opens DSH in a new tab; there is no iframe or
 custom Chat component.
 
 ## Local startup
@@ -72,7 +72,7 @@ trust fence to accept the public authority.
 
 The local frontend configuration points “Try My Meme” to
 `http://127.0.0.1:3081/`. Start DSH with `node scripts/start-dsh.mjs` (or
-`make dev-dsh`), then use the Overview button. The helper redirects to the
+`make dev-dsh`), then use the “Try My Meme” link. The helper redirects to the
 current tokenized DSH URL on port 3080. Tokens stay in memory; redirects are not
 cached. Restarting the helper captures the new token without editing the frontend.
 Keep the helper running. This loopback entry is for local interviews, not remote
@@ -88,6 +88,6 @@ For the deployed interview site:
 
 The setting is visible in the public frontend; do not include a launch token or
 API key. Nginx authenticates the visitor before the helper resolves the current
-process token. Until configured, the Overview shows “Live demo coming soon”.
+process token. Until configured, the demo link is hidden.
 The deployment is intended for controlled interview access, not concurrent
 untrusted users.

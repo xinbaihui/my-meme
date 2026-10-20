@@ -156,7 +156,9 @@ function evaluateCase(evalCase, toolCalls) {
   }
 
   const checks = [
-    `required tools present: ${evalCase.requiredTools.join(', ')}`,
+    evalCase.requiredTools.length > 0
+      ? `required tools present: ${evalCase.requiredTools.join(', ')}`
+      : null,
     evalCase.forbiddenTools.length > 0
       ? `forbidden tools absent: ${evalCase.forbiddenTools.join(', ')}`
       : null,

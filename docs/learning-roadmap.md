@@ -23,7 +23,7 @@ Use My Meme to learn agent application engineering through small, observable exp
 | Automated Eval Runner | Completed | `run-suite.py` executes cases through isolated SDK sessions, saves JSONL, and invokes the existing evaluator. |
 | Repeated-run Reliability | Completed at development-sample level | E5 scored 4/5 before the gate change and 9/10 across two post-change samples; Skill guidance improved but did not guarantee compliance. |
 | Monorepo | Completed | One repository contains frontend, backend, and plugin; dependencies are independently installed without Nx or workspace hoisting. |
-| Interview presentation | Implemented locally | Compact Overview and recorded Evaluations pages; native DSH Web selected for live Chat. |
+| Interview presentation | Implemented locally | Evaluations homepage and native DSH Web for live Chat. |
 | Public evidence snapshot | Completed | Existing evaluator rechecks saved E1–E5 records; exported verdicts, sequences, timestamps and hashes are displayed without raw tool payloads. |
 | Public demo deployment | Pending | Configure a hosted DSH Web destination and verify interviewer access before enabling the live-demo link. |
 | Tool Result Validity | Completed for recorded structure | Calls correlate to explicit success/error envelopes; rendered artifact fields, empty results and required-route outputs are checked with regression tests. |
@@ -53,9 +53,9 @@ deterministic enforcement boundary.
 
 ## Interview delivery
 
-The selected delivery plan is an independent portfolio plus the unmodified
-DSH Web interface for live use. The Overview stays brief; detailed evaluation
-evidence belongs on `/evals`. This avoids maintaining another Chat interaction
+The selected delivery plan is an independent evaluation page plus the unmodified
+DSH Web interface for live use. Evaluation evidence appears at `/`, with `/evals`
+retained as an older address. This avoids maintaining another Chat interaction
 state machine. A customized DSH client remains an option, not the current plan.
 
 The portfolio is implemented and has passed build and rendered-page/evidence

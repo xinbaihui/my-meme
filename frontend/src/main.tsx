@@ -5,6 +5,6 @@ import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App pathname={window.location.pathname} />
+  <App />
   </StrictMode>,
 );

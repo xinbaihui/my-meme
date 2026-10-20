@@ -208,9 +208,9 @@ The exporter does not run new Agent sessions or use model credentials.
 
 The snapshot also contains each record's first event timestamp and SHA-256,
 the export time, and hashes of the evaluator and case specifications. These
-original runs did not record the code version; `runCodeVersion` is null and the
-page displays “Not recorded”. Record time and snapshot export time are distinct
-and are displayed in UTC+8. Neither should be presented as a new live eval run.
+original runs did not record the code version; `runCodeVersion` is null. The
+page omits the metadata strip and shows only each selected source path. None of
+the saved evidence should be presented as a new live eval run.
 
 Raw logs are Git-ignored and remain local. The public snapshot excludes raw
 messages, tool arguments and tool results. Its included prompts are the test
@@ -221,7 +221,7 @@ the source-comparison test require those local records.
 The current snapshot rechecks the saved suite at 5/5 behavior and 5/5 applicable tool-result cases. E5's 4/5 baseline and
 9/10 post-change repeat-run totals are separate documented experiments; their
 individual records are not included or recomputed by this snapshot. The page
-labels this distinction and does not invent historical event sequences.
+shows the saved suite only and does not invent historical event sequences.
 In the saved E5 record, template searches occur in turn 2; these checks alone
 do not require an `ask_user_question` tool call in turn 1 or prove question quality.
 

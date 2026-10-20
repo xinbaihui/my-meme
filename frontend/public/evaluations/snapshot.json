@@ -1,8 +1,8 @@
 {
-  "exportedAt": "2026-10-08T04:09:20.063Z",
+  "exportedAt": "2026-10-19T08:34:18.643Z",
   "runCodeVersion": null,
-  "evaluatorSha256": "0b116358863e37e34ae54d3c0f4a5efd4fce111cdc0bdee61f7bf08107626de2",
-  "specificationsSha256": "ff1d8e7e282819f45ecb0c0471dcce6a25eb6da5d2fa0784377072e17a0984ef",
+  "evaluatorSha256": "2327ff393247ea78b149fa567715cb59515c23b1d08ea7e824e4530d08a9d1b2",
+  "specificationsSha256": "b2f534c6477a1cb97ac5dab187daf967724829e76bf2a818bb5fc06101844950",
   "resultEvaluatorSha256": "5f1e3b388749f62d8dbc7094e59bebdafd5a5449000e02c346af78c18a6182f6",
   "scope": "Tool behavior and recorded rendered-result structure. No URL fetching, final-message delivery, semantic or visual quality scoring.",
   "resultsPassed": 5,
@@ -160,7 +160,7 @@
       "sourceSha256": "4fa94fbc6ba4a58424a3b2247ccb9ca9f4c144c04cc7f04af74a5cd562c44c46",
       "recordedAt": "2026-09-30T09:47:13.357Z",
       "result": "PASS",
-      "reason": "required tools present: ; forbidden tools absent: ask_user_question",
+      "reason": "forbidden tools absent: ask_user_question",
       "toolResults": {
         "applicable": true,
         "passed": true,
@@ -209,9 +209,7 @@
       "id": "E5",
       "description": "Clarify an ambiguous visual request in turn 1, then search the selected static meme type in turn 2.",
       "prompt": "My colleague said \"this should be a simple change.\" I want to reply with something visual.",
-      "requiredTools": [
-        "search_memes"
-      ],
+      "requiredTools": [],
       "forbiddenTools": [],
       "forbiddenToolsInTurn": [
         {
@@ -235,7 +233,7 @@
       "sourceSha256": "34e5c07a99bdde4431da9ed044273b8c0ad14472ca3aca5b9ce9cfe22abd9345",
       "recordedAt": "2026-09-30T09:47:19.617Z",
       "result": "PASS",
-      "reason": "required tools present: search_memes; required per-turn tools present; forbidden per-turn tools absent",
+      "reason": "required per-turn tools present; forbidden per-turn tools absent",
       "toolResults": {
         "applicable": true,
         "passed": true,

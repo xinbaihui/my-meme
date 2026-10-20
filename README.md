@@ -28,8 +28,8 @@ This repository is also a learning project for agent application engineering. Th
 - The automated E1–E5 behavior suite has produced a 5/5 pass result.
 - The first E5 repeated-run sample passed 4/5 isolated runs (80%). After strengthening the Skill's mandatory content-type gate, two further samples passed 5/5 and 4/5, for a combined post-change result of 9/10 (90%).
 - `sdk-smoke.py` verifies that an SDK-launched Harness instance can load the Skill and all three tools.
-- The independent React + Vite frontend presents a compact Overview and an Evaluations page.
-- Evaluations renders real E1–E5 verdicts and tool-call sequences from an exported snapshot, with a downloadable evidence file.
+- The independent React + Vite frontend presents E1–E5 evaluation results at the homepage.
+- Evaluations renders E1–E5 verdicts and tool-call sequences from an exported snapshot.
 - The live experience uses native DSH Web Chat and Trajectory; the portfolio does not implement its own Chat.
 
 ### Current limitations
@@ -39,7 +39,7 @@ This repository is also a learning project for agent application engineering. Th
 - The application relies on conversation history for short multi-turn edits; it has no explicit task-state store or long-term memory system.
 - RAG, MCP integration, and multi-agent orchestration are not implemented.
 - The interview demo is published at `https://121.40.130.20/demo` behind HTTPS and Nginx Basic Authentication.
-- The recorded Agent runs did not capture a code version; the evidence page reports this as “Not recorded”.
+- The recorded Agent runs did not capture a code version; this limits historical reproducibility.
 
 ### Current next step
 
@@ -123,10 +123,9 @@ The `meme-selection` Skill currently lives at the repository-level path `.agents
 
 ## Interview demo
 
-The frontend is a project showcase with two pages:
-
-- **Overview (`/`)**: a short project description, one live-demo entry, and three brief contributions (Skill, tools, evaluations). Detailed evidence stays on the Evaluations page.
-- **Evaluations (`/evals`)**: accessed through the top navigation; shows case rules, actual calls, separate behavior/output verdicts, record timestamps, source hashes, and a downloadable snapshot. The repeated E5 experiment is described separately.
+The frontend shows **Evaluations** at `/`, with `/evals` retained as an older
+address. It displays case rules, recorded tool calls, and separate behavior
+and tool-result verdicts. The repeated E5 experiment is documented separately.
 
 
 Native DSH Web provides the live Chat and Trajectory experience. The portfolio
@@ -150,8 +149,8 @@ npm run eval:snapshot
 ```
 
 See [frontend/README.md](frontend/README.md) for the snapshot scope and demo
-configuration. The repeat-run experiment is labeled separately from the
-recomputed suite, and the original run code version is marked as unrecorded.
+configuration. The repeat-run experiment is documented separately from the
+recomputed suite, and the original run code version was not recorded.
 
 ## Run the built-in DSH Chat and Trajectory UI
 
