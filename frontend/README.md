@@ -1,8 +1,8 @@
 # My Meme portfolio
 
 This React + Vite frontend presents saved evaluation evidence. Live Chat is
-provided by a separate, native DSH Web deployment. The page does not require
-the Python API to be running.
+provided by a separate, native DSH Web deployment. The page is static and does
+not require a Python API.
 
 ## Pages
 
@@ -54,9 +54,26 @@ The link opens in a new tab. Restart frontend development or rebuild after
 changing the environment setting. Without an address, the demo link is hidden.
 This public setting must never contain a token or API key. The public entry
 uses HTTPS and Nginx Basic Authentication. The local helper binds only to
-loopback. The evaluation page does not require the Python API.
+loopback. The evaluation page does not require an API server.
 
 ## Recorded evaluation evidence
+
+To rerun E1–E5 and view the new results locally, start at the repository root:
+
+```bash
+make eval
+cd frontend
+npm run eval:snapshot
+npm run dev
+```
+
+Open the local URL printed by Vite. `make eval` runs new Agent sessions and
+replaces the five `evals/E*-session.jsonl` files; it needs `DEEPSEEK_API_KEY`
+and `GIPHY_API_KEY` in the environment or `.env/keys.json`. The snapshot command
+does not run the Agent: it rechecks those saved records and updates
+`public/evaluations/snapshot.json`. If Vite is already running, refresh the page
+after exporting. A deployed static site needs `npm run build` and deployment of
+the new `dist/` files to show the new snapshot.
 
 ```bash
 npm run eval:snapshot
@@ -76,7 +93,7 @@ code version was not captured. Repeated E5 run totals are documented separately,
 not recomputed by the public page.
 
 The rendered-page tests require the local source trajectories. They render the
-homepage and older `/evals` URL in the Vite test environment and check that
-evaluation evidence is presented and exported calls match local source records. Output checks use
+homepage in the Vite test environment and check that evaluation evidence is
+presented and exported calls match local source records. Output checks use
 the plugin-rendered text stored in those records; they do not fetch image URLs
 or prove final-message delivery. Behavior and result-check totals are separate.

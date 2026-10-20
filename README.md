@@ -27,7 +27,7 @@ This repository is also a learning project for agent application engineering. Th
 - The Python SDK runner executes E1–E5 in isolated sessions, saves their JSONL trajectories, and invokes the deterministic evaluator.
 - The automated E1–E5 behavior suite has produced a 5/5 pass result.
 - The first E5 repeated-run sample passed 4/5 isolated runs (80%). After strengthening the Skill's mandatory content-type gate, two further samples passed 5/5 and 4/5, for a combined post-change result of 9/10 (90%).
-- `sdk-smoke.py` verifies that an SDK-launched Harness instance can load the Skill and all three tools.
+- `sdk-smoke.py` starts a real SDK session, checks that the `meme-selection` Skill appears in the available Skill catalog, and verifies a `search_giphy` call for a fixed GIF request.
 - The independent React + Vite frontend presents E1–E5 evaluation results at the homepage.
 - Evaluations renders E1–E5 verdicts and tool-call sequences from an exported snapshot.
 - The live experience uses native DSH Web Chat and Trajectory; the portfolio does not implement its own Chat.
@@ -43,9 +43,8 @@ This repository is also a learning project for agent application engineering. Th
 
 ### Current next step
 
-The portfolio now builds as a static React + Vite site. Next, deploy its
-`frontend/dist/` output through the existing ECS Nginx server, then connect the
-Evaluations page to the planned API. The native DSH Web demo is already
+The frontend builds as a static React + Vite site. A future full-stack phase can
+add an Evaluation API backed by persistent run data. The native DSH Web demo is
 published at the protected `/demo` entry.
 
 ## Project layout
@@ -53,7 +52,7 @@ published at the protected `/demo` entry.
 ```text
 my-meme/
 ├── frontend/              # Portfolio + evaluations; independent Node dependencies
-├── backend/               # Python API, requirements.txt and local .venv
+├── requirements.txt       # Python SDK dependency for eval and smoke tools
 ├── plugin/                # DSH plugin, package.json and pnpm-lock.yaml
 ├── .agents/skills/
 ├── docs/
@@ -62,10 +61,9 @@ my-meme/
 └── sdk-smoke.py
 ```
 
-This is one Git repository without Nx or npm/pnpm workspaces. Each component
-installs its own dependencies; there is no root dependency manifest, lockfile,
-or hoisting. The DSH plugin remains in its existing `plugin/` directory.
-The frontend uses npm and `package-lock.json`.
+This is one Git repository without Nx or npm/pnpm workspaces. The frontend uses
+npm and `package-lock.json`, the plugin uses pnpm, and the root Python tools use
+`requirements.txt` and `.venv`. Dependencies are installed separately.
 
 ## Local startup
 
@@ -86,7 +84,7 @@ node scripts/start-dsh.mjs
 The helper launches DSH on port 3080 and automatically captures its current
 startup token. “Try My Meme” uses the fixed entry on port 3081, which redirects
 to that authenticated URL. Stop an existing DSH before launching the helper;
-keep the helper running during the demo. The portfolio does not require the Python API.
+keep the helper running during the demo.
 
 The root `Makefile` is an optional shortcut collection, not a dependency manager:
 
@@ -97,13 +95,13 @@ The root `Makefile` is an optional shortcut collection, not a dependency manager
 | `make install-plugin` / `make build-plugin` | Install or build the independent `plugin/` package. |
 | `make build` | Build the portfolio and plugin. |
 | `make test-frontend` | Build and run portfolio/evidence tests; local source trajectories are required. |
-| `make eval` | Run live E1–E5 sessions with `backend/.venv/bin/python`; requires credentials. |
-| `make dev-backend` | Start the retained Python API; optional for the current showcase. |
+| `make eval` | Run live E1–E5 sessions with an available project virtual environment; requires credentials. |
+| `make install-python` | Install the SDK dependency for eval and smoke tools into `.venv`. |
 
 For Python SDK workflows, use Python 3.10+ and
-`make install-backend PYTHON=python3.12` (select an installed interpreter).
-Use `BACKEND_PYTHON` to reuse an existing environment, for example
-`make dev-backend BACKEND_PYTHON=.venv/bin/python`.
+`make install-python PYTHON=python3.12` (select an installed interpreter).
+Use `PYTHON_BIN` to select another existing environment for `make eval` or
+`make smoke`.
 
 The former frontend Git metadata (including its index and history) is preserved
 locally in `.repo-backups/frontend.git/`. Frontend source and pending edits now
@@ -116,7 +114,7 @@ The `meme-selection` Skill currently lives at the repository-level path `.agents
 
 - Node.js >=22.13.0 for the frontend, and the DSH npm CLI for the native Web UI.
 - Node.js for the deterministic evaluator.
-- Python 3.10+ and dependencies from `backend/requirements.txt` for the optional API, SDK smoke test, and live eval runner.
+- Python 3.10+ and dependencies from root `requirements.txt` for the SDK smoke test and live eval runner.
 - `DEEPSEEK_API_KEY` for live Agent execution.
 - `GIPHY_API_KEY` for live GIPHY search.
 - Network access for the Memegen and GIPHY APIs.
@@ -128,9 +126,8 @@ address. It displays case rules, recorded tool calls, and separate behavior
 and tool-result verdicts. The repeated E5 experiment is documented separately.
 
 
-Native DSH Web provides the live Chat and Trajectory experience. The portfolio
-pages can run without the Python API; the backend remains available for the
-previous custom-Chat integration.
+Native DSH Web provides the live Chat and Trajectory experience. The evaluation
+page is static and does not require a separate Python API.
 
 Configure `VITE_DSH_WEB_URL` in `frontend/.env.local` to link to DSH Web.
 The interview deployment uses `https://121.40.130.20/demo`; restart development
@@ -185,13 +182,13 @@ Web workspace so the Skill can be discovered. Export `DEEPSEEK_API_KEY` and
 ## Run the current eval suite
 
 ```bash
-backend/.venv/bin/python evals/run-suite.py
+make eval
 ```
 
 Run one selected case repeatedly:
 
 ```bash
-backend/.venv/bin/python evals/run-suite.py --case E5 --runs 5
+.venv/bin/python evals/run-suite.py --case E5 --runs 5
 ```
 
 Exit codes:
@@ -200,4 +197,6 @@ Exit codes:
 - `1`: one or more behavior checks failed.
 - `2`: evaluator input or execution error.
 
-See [docs/evals.md](docs/evals.md) for case definitions and interpretation.
+See [frontend/README.md](frontend/README.md#recorded-evaluation-evidence) for
+the full run → snapshot → local page workflow, and [docs/evals.md](docs/evals.md)
+for case definitions and interpretation.

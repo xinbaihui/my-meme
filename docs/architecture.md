@@ -36,17 +36,17 @@ The ECS environment sets `DSH_TRUSTED_HOST`; the helper converts it to one DSH
 The frontend uses the fixed `/demo` entry, so a changed process token needs no
 frontend edit.
 
-The Python API in `backend/` remains available for earlier SDK/custom-Chat
-integrations. The portfolio does not use it, and its SDK sessions are not
-implicitly linked to DSH Web sessions.
+There is currently no separate Python HTTP API. The Python SDK is used by the
+evaluation runner and smoke test; it does not serve frontend requests. A future
+Evaluation API would be a distinct service with persistent run data.
 
 ## Repository and dependencies
 
-`frontend/`, `backend/`, and `plugin/` belong to one Git repository. The frontend
+`frontend/`, `evals/`, and `plugin/` belong to one Git repository. The frontend
 is no longer a nested repository; its old Git metadata is backed up locally in
 `.repo-backups/frontend.git/`. No Nx or npm/pnpm workspace is used. Each module
-owns its dependency manifest and installation: npm in `frontend/`, Python
-requirements and an optional local virtual environment in `backend/`, pnpm in
+owns its dependency manifest and installation: npm in `frontend/`, root
+`requirements.txt` and `.venv` for Python SDK tools, pnpm in
 `plugin/`. The Makefile only delegates commands.
 
 ## Agent architecture

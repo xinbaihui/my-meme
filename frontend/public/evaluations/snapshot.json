@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-10-19T08:34:18.643Z",
+  "exportedAt": "2026-10-20T07:42:41.109Z",
   "runCodeVersion": null,
   "evaluatorSha256": "2327ff393247ea78b149fa567715cb59515c23b1d08ea7e824e4530d08a9d1b2",
   "specificationsSha256": "b2f534c6477a1cb97ac5dab187daf967724829e76bf2a818bb5fc06101844950",
@@ -7,7 +7,7 @@
   "scope": "Tool behavior and recorded rendered-result structure. No URL fetching, final-message delivery, semantic or visual quality scoring.",
   "resultsPassed": 5,
   "resultsApplicable": 5,
-  "passed": 5,
+  "passed": 4,
   "total": 5,
   "cases": [
     {
@@ -22,23 +22,23 @@
         "generate_meme"
       ],
       "source": "evals/E1-session.jsonl",
-      "sourceSha256": "9c8fab31f24e5905b721e9bc19004e46488c4578d32c58a98865c6e1181dfc63",
-      "recordedAt": "2026-09-30T09:46:59.084Z",
+      "sourceSha256": "bcba890b88bc8d698d57f7c6b2a167b3a2681eb9eb68145a3b381a7307cb5264",
+      "recordedAt": "2026-10-20T07:17:23.657Z",
       "result": "PASS",
       "reason": "required tools present: search_memes; forbidden tools absent: search_giphy, generate_meme",
       "toolResults": {
         "applicable": true,
         "passed": true,
-        "artifactCount": 5,
+        "artifactCount": 6,
         "checks": [
           {
             "tool": "search_memes",
             "callSeq": 20,
             "turn": 1,
             "resultSeq": 21,
-            "artifactCount": 5,
+            "artifactCount": 6,
             "status": "VALID",
-            "reason": "All 5 candidates contain the required ID, title and HTTP(S) image fields."
+            "reason": "All 6 candidates contain the required ID, title and HTTP(S) image fields."
           }
         ],
         "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
@@ -68,36 +68,31 @@
         "generate_meme"
       ],
       "source": "evals/E2-session.jsonl",
-      "sourceSha256": "f0915de05b8ac4e66c1de4f8ed9edbb449ad8106f4400f0d4a39e4ff2f458058",
-      "recordedAt": "2026-09-30T09:47:03.441Z",
+      "sourceSha256": "39cbb7b5302d1a82d7f034c7da6a03d979d1a23aa53de92f57f6dba70f7c2439",
+      "recordedAt": "2026-10-20T07:17:29.290Z",
       "result": "PASS",
       "reason": "required tools present: search_giphy; forbidden tools absent: search_memes, generate_meme",
       "toolResults": {
         "applicable": true,
         "passed": true,
-        "artifactCount": 5,
+        "artifactCount": 6,
         "checks": [
           {
             "tool": "search_giphy",
-            "callSeq": 20,
+            "callSeq": 15,
             "turn": 1,
-            "resultSeq": 21,
-            "artifactCount": 5,
+            "resultSeq": 16,
+            "artifactCount": 6,
             "status": "VALID",
-            "reason": "All 5 candidates contain the required ID, title and HTTP(S) image fields."
+            "reason": "All 6 candidates contain the required ID, title and HTTP(S) image fields."
           }
         ],
         "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
       },
       "calls": [
         {
-          "name": "skill",
-          "seq": 15,
-          "turn": 1
-        },
-        {
           "name": "search_giphy",
-          "seq": 20,
+          "seq": 15,
           "turn": 1
         }
       ]
@@ -114,8 +109,8 @@
         "search_giphy"
       ],
       "source": "evals/E3-session.jsonl",
-      "sourceSha256": "fca2f58958e12d1aa6bb40c23b29c453b30ddca824aee1c4b81127b5b37c9909",
-      "recordedAt": "2026-09-30T09:47:08.556Z",
+      "sourceSha256": "b65b82ea02671519d9b558366e2e2aa91ce309dd2e91473451f326969eeb20fc",
+      "recordedAt": "2026-10-20T07:17:35.040Z",
       "result": "PASS",
       "reason": "required tools present: generate_meme; forbidden tools absent: search_memes, search_giphy",
       "toolResults": {
@@ -157,23 +152,23 @@
         "ask_user_question"
       ],
       "source": "evals/E4-session.jsonl",
-      "sourceSha256": "4fa94fbc6ba4a58424a3b2247ccb9ca9f4c144c04cc7f04af74a5cd562c44c46",
-      "recordedAt": "2026-09-30T09:47:13.357Z",
+      "sourceSha256": "4eca6142f2e5a8d945bc7921eb9b5d33cc58948d06b9e70da05d6a022dd68140",
+      "recordedAt": "2026-10-20T07:17:42.179Z",
       "result": "PASS",
       "reason": "forbidden tools absent: ask_user_question",
       "toolResults": {
         "applicable": true,
         "passed": true,
-        "artifactCount": 9,
+        "artifactCount": 4,
         "checks": [
           {
             "tool": "search_memes",
             "callSeq": 20,
             "turn": 1,
             "resultSeq": 21,
-            "artifactCount": 8,
+            "artifactCount": 3,
             "status": "VALID",
-            "reason": "All 8 candidates contain the required ID, title and HTTP(S) image fields."
+            "reason": "All 3 candidates contain the required ID, title and HTTP(S) image fields."
           },
           {
             "tool": "generate_meme",
@@ -230,14 +225,14 @@
         }
       ],
       "source": "evals/E5-session.jsonl",
-      "sourceSha256": "34e5c07a99bdde4431da9ed044273b8c0ad14472ca3aca5b9ce9cfe22abd9345",
-      "recordedAt": "2026-09-30T09:47:19.617Z",
+      "sourceSha256": "dd2fc64ba9b76a15391763a85de8d84782cb7133feceffb512d264a74074ec0a",
+      "recordedAt": "2026-10-20T07:17:49.446Z",
       "result": "PASS",
       "reason": "required per-turn tools present; forbidden per-turn tools absent",
       "toolResults": {
         "applicable": true,
         "passed": true,
-        "artifactCount": 26,
+        "artifactCount": 13,
         "checks": [
           {
             "tool": "search_memes",
@@ -253,18 +248,9 @@
             "callSeq": 30,
             "turn": 2,
             "resultSeq": 31,
-            "artifactCount": 6,
+            "artifactCount": 3,
             "status": "VALID",
-            "reason": "All 6 candidates contain the required ID, title and HTTP(S) image fields."
-          },
-          {
-            "tool": "search_memes",
-            "callSeq": 32,
-            "turn": 2,
-            "resultSeq": 33,
-            "artifactCount": 10,
-            "status": "VALID",
-            "reason": "All 10 candidates contain the required ID, title and HTTP(S) image fields."
+            "reason": "All 3 candidates contain the required ID, title and HTTP(S) image fields."
           }
         ],
         "reason": "All business-tool calls have successful, structurally valid results; required routes produced artifacts."
@@ -283,11 +269,6 @@
         {
           "name": "search_memes",
           "seq": 30,
-          "turn": 2
-        },
-        {
-          "name": "search_memes",
-          "seq": 32,
           "turn": 2
         }
       ]

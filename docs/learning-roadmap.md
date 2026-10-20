@@ -22,7 +22,7 @@ Use My Meme to learn agent application engineering through small, observable exp
 | Eval Suite | Completed | E1–E5 run through one evaluator and produce a suite summary. |
 | Automated Eval Runner | Completed | `run-suite.py` executes cases through isolated SDK sessions, saves JSONL, and invokes the existing evaluator. |
 | Repeated-run Reliability | Completed at development-sample level | E5 scored 4/5 before the gate change and 9/10 across two post-change samples; Skill guidance improved but did not guarantee compliance. |
-| Monorepo | Completed | One repository contains frontend, backend, and plugin; dependencies are independently installed without Nx or workspace hoisting. |
+| Monorepo | Completed | One repository contains frontend, evaluation tools, and plugin; dependencies are independently installed without Nx or workspace hoisting. |
 | Interview presentation | Implemented locally | Evaluations homepage and native DSH Web for live Chat. |
 | Public evidence snapshot | Completed | Existing evaluator rechecks saved E1–E5 records; exported verdicts, sequences, timestamps and hashes are displayed without raw tool payloads. |
 | Public demo deployment | Pending | Configure a hosted DSH Web destination and verify interviewer access before enabling the live-demo link. |
@@ -62,7 +62,18 @@ The portfolio is implemented and has passed build and rendered-page/evidence
 tests. Public DSH deployment and access verification are still pending. Set
 `VITE_DSH_WEB_URL` after a public base address is available, then rebuild
 the portfolio. No launch credential belongs in the frontend configuration.
-The Python API is retained but is optional for this presentation.
+The unused custom-Chat Python API was removed. A future Evaluation API should
+be built around stored run data and used by the frontend if full-stack behavior
+is added to the interview demo.
+
+For that phase, first persist evaluation runs, case verdicts, and tool calls in
+SQLite using a repeatable import from the existing JSONL records. Then expose
+read endpoints for the latest run and a selected run, and have React fetch them
+with loading and error states. Add a protected import or run trigger only after
+the read path works; model credentials and raw trajectories must stay server-side.
+Finally, deploy the API as a separate service behind Nginx `/api/` and test the
+database, API responses, and browser flow together. This makes the backend part
+of the product instead of retaining an unused Chat wrapper.
 
 ## Learning principles
 

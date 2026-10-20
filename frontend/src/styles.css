@@ -99,7 +99,7 @@ h1 span { color:var(--blue); }
 .score-metric:nth-child(2) .score-ring { border-color:var(--green); color:#008965; }
 .score-metric span { color:#514c44; font-size:13px; font-weight:700; }
 .eval-workspace { display:grid; grid-template-columns:1.65fr .75fr; gap:18px; padding-bottom:70px; }
-.case-list,.case-detail { height:min(70vh,640px); min-height:320px; overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; background:var(--white); border:1px solid var(--line); border-radius:18px; }
+.case-list,.case-detail { height:min(70vh,640px); min-height:320px; overflow-y:auto; overscroll-behavior:contain; background:var(--white); border:1px solid var(--line); border-radius:18px; }
 .case-list-heading,.case-row { display:grid; grid-template-columns:58px 1.5fr 1fr 72px; gap:12px; align-items:center; }
 .case-list-heading { position:sticky; top:0; z-index:1; padding:13px 18px; background:#ebe7de; color:#847d70; font:700 9px var(--font-geist-mono),monospace; letter-spacing:.1em; }
 .case-row { width:100%; border:0; border-top:1px solid #e4dfd6; background:transparent; text-align:left; padding:17px 18px; cursor:pointer; }

@@ -88,7 +88,7 @@ The evaluator produces a reason for every PASS or FAIL and prints suite totals a
 ### Run automatically
 
 ```bash
-backend/.venv/bin/python evals/run-suite.py
+make eval
 ```
 
 The runner reads `.env/keys.json` when the current process does not already
@@ -100,7 +100,7 @@ writes `E1-session.jsonl` through `E5-session.jsonl`, and invokes the evaluator.
 Run one selected case multiple times in isolated sessions:
 
 ```bash
-backend/.venv/bin/python evals/run-suite.py --case E5 --runs 5
+.venv/bin/python evals/run-suite.py --case E5 --runs 5
 ```
 
 This writes `E5-run-01-session.jsonl` through
@@ -209,7 +209,7 @@ The exporter does not run new Agent sessions or use model credentials.
 The snapshot also contains each record's first event timestamp and SHA-256,
 the export time, and hashes of the evaluator and case specifications. These
 original runs did not record the code version; `runCodeVersion` is null. The
-page omits the metadata strip and shows only each selected source path. None of
+page omits the metadata strip and source paths. None of
 the saved evidence should be presented as a new live eval run.
 
 Raw logs are Git-ignored and remain local. The public snapshot excludes raw
@@ -232,14 +232,17 @@ cd frontend
 npm test
 ```
 
-The existing tests build and render both React routes without the Python API, check
-sample/metadata labeling, and compare exported calls with local source records.
+The existing tests build and render the evaluation homepage without the Python
+API, check sample labeling, and compare exported calls with local source records.
 DSH Trajectory provides live execution inspection; the public evaluation page
 provides a fixed, independently inspectable behavior sample.
 
+For the complete run → snapshot → local page sequence, see the
+[frontend instructions](../frontend/README.md#recorded-evaluation-evidence).
+
 ## SDK smoke test
 
-`sdk-smoke.py` verifies agent composition through the Harness Python SDK. It checks that the SDK-launched request context contains the `meme-selection` Skill and all three meme tools.
+`sdk-smoke.py` verifies one real agent route through the Harness Python SDK. It checks that the SDK-launched request context contains the `meme-selection` Skill and that a fixed GIF request calls `search_giphy`. It does not check the other two meme tools.
 
 This smoke test is not the Automated Eval Runner. It verifies configuration availability, not E1–E5 behavior end to end.
 
